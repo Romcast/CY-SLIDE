@@ -12,5 +12,5 @@ public class level {
 	public boolean accessible() {}
 	public boolean isSolvable() {}
 	public int solve() {}
-	public frame[][] moveFrame(frame frame, int direction ) {}
+	public void moveFrame(frame frame, int direction ) {}
 }
