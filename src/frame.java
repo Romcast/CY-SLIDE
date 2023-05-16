@@ -4,7 +4,7 @@ public class frame {
 	private int y;
 	private boolean movable;
 	private int value;
-	public boolean isMovable() {}
-	public boolean isVoid() {}
-	public boolean exist() {}
+	public boolean isMovable() {return true;}
+	public boolean isVoid() {return true;}
+	public boolean exist() {return true;}
 }
