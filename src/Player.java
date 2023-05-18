@@ -9,13 +9,26 @@ public class Player implements Serializable {
 	
 	public Player(String pseudo) {
 		this.pseudo = pseudo;
+		this.levelMax = 1;
+		this.playerLevels = new ArrayList<Level>();
 	}
-	public void play(Level level) {}
-	//public level createLevel(level level) {}
 	public int getLevelMax() {
 		return this.levelMax;
 	}
 	public String getPseudo() {
 		return this.pseudo;
+	}
+	
+	public void createLevel(ArrayList<InitialLevel> initialLevelArrayList) {
+		InitialLevel initialLevel = new InitialLevel();
+		for(InitialLevel l : initialLevelArrayList) {
+			if (l.getNumber() == this.levelMax) {
+				initialLevel = l;
+				break;
+			}
+			
+		}
+		Level newLevel = new Level(initialLevel,this);
+		this.playerLevels.add(newLevel);
 	}
 }

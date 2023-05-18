@@ -58,6 +58,10 @@ public void print()
 	this.goal.print();
 }
 
+public int getNumber() {
+	return this.levelNumber;
+}
+
 }
 
 
