@@ -1,7 +1,21 @@
+import java.io.*;
+import java.util.*;
 
-public class player {
+public class Player implements Serializable {
+	static final long serialVersionUID = 1;
 	private String pseudo;
 	private int levelMax;
-	public void play(level level) {}
+	private ArrayList<Level> playerLevels;
+	
+	public Player(String pseudo) {
+		this.pseudo = pseudo;
+	}
+	public void play(Level level) {}
 	//public level createLevel(level level) {}
+	public int getLevelMax() {
+		return this.levelMax;
+	}
+	public String getPseudo() {
+		return this.pseudo;
+	}
 }
