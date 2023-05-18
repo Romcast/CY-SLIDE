@@ -1,7 +1,7 @@
 
 import java.io.*; // pour le try si il y a une erreur
 
-public class initialLevel 
+public class InitialLevel 
 {
 
 protected Grid goal;
