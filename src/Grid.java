@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.*;
+import java.util.Random;
 
 public class Grid {
 private final int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -8,15 +9,19 @@ public int[][] grid;
 private int nbLine;
 private int nbColumn;
 
-int i,j;
+int i=0;
+int j=0;
+int w=0;
 
 public int getNbLine(){return this.nbLine;}
 public int getNbColumn(){return this.nbColumn;}
 public int[][] getGrid(){return this.grid;}
 
-public Grid(int nbLine, int nbColumn) 
+public Grid(int[][] grid) 
 {
         int value = 1;
+        nbLine=grid.length;
+        nbColumn=grid[0].length;
         this.nbLine=nbLine;
         this.nbColumn=nbColumn;
         this.grid = new int[nbLine][nbColumn];
@@ -25,13 +30,12 @@ public Grid(int nbLine, int nbColumn)
         {
             for(j=0;j<nbColumn;j++)
             {
-                this.grid[i][j]= value;
-                value++;
+                this.grid[i][j]= grid[i][j];
             }
         }
-        this.grid[nbLine-1][nbColumn-1]= 0;
+        
 }
-
+        
 public void print() // Displays a grid
 {
     for (int i = 0; i < nbLine ; i++) 
@@ -257,19 +261,20 @@ return :
 
     public Grid copyGrid() 
 	{
-        Grid newG = new Grid(this.nbLine,this.nbColumn);
+        int[][] grid = new int[this.nbLine][this.nbColumn];
+        Grid copy = new Grid(grid);
 
 
         for (int i = 0; i < this.nbLine; i++) {
             for (int j = 0; j < this.nbColumn; j++) {
-                newG.grid[i][j] = this.grid[i][j];
+                copy.grid[i][j] = this.grid[i][j];
             }
         }
-        newG.nbColumn=this.nbColumn;
-        newG.nbLine=this.nbLine;
+        copy.nbColumn=this.nbColumn;
+        copy.nbLine=this.nbLine;
 
-        return newG;
-    }
+        return copy;
+}
 
 
 }
