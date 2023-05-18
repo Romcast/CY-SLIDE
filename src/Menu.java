@@ -10,7 +10,6 @@ public class Menu {
 	
 	public Menu() throws IOException, ClassNotFoundException{
 		this.readPlayerFile();
-		this.readInitialLevelFile();
 		scan = new Scanner(System.in); 
 	}
 	
@@ -31,8 +30,7 @@ public class Menu {
     	String newPseudo = ""; // the pseudo used to create a player
     	while (!verifyName) {  // gets a new tempPseudo while it is not a unique pseudo
     		verifyName = true;
-    		System.out.println("Enter you"
-    				+ "r Pseudo : "); 
+    		System.out.println("Enter you" + "r Pseudo : "); 
     		String tempPseudo = scan.next();
     		for(Player p : playerArrayList) {           // verifies if the pseudo is not already used for another player in the playerArrayList
     			if (tempPseudo.equals(p.getPseudo())) {
@@ -50,7 +48,7 @@ public class Menu {
     	Player newPlayer = new Player(newPseudo);
     	playerArrayList.add(newPlayer);
     	
-    	FileOutputStream fos = new FileOutputStream("Files/Player.txt"); 
+    	FileOutputStream fos = new FileOutputStream("data/Player.txt"); 
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(playerArrayList); // modifies the file to add the modified arrayList of players
 		oos.close();
@@ -60,7 +58,7 @@ public class Menu {
 	public void removePlayer(int index) throws IOException, ClassNotFoundException{
 		String pseudo = this.playerArrayList.get(index).getPseudo();
 		this.playerArrayList.remove(index);
-		FileOutputStream fos = new FileOutputStream("Files/Player.txt"); 
+		FileOutputStream fos = new FileOutputStream("data/Player.txt"); 
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(playerArrayList); // modifies the file to add the modified arrayList of players
 		oos.close();
@@ -70,41 +68,23 @@ public class Menu {
 	
 	public void readPlayerFile() throws IOException, ClassNotFoundException {
 		try {																// verifies if the file exists and is not empty
-			FileInputStream fis = new FileInputStream("Files/Player.txt");
+			FileInputStream fis = new FileInputStream("data/Player.txt");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ois.close();
 		}
 		catch (EOFException |FileNotFoundException e) {						// if not it creates it with an empty arrayList serialized
 			ArrayList<Player> playerEmptyArrayList = new ArrayList<Player>();
-			FileOutputStream fos = new FileOutputStream("Files/Player.txt");
+			FileOutputStream fos = new FileOutputStream("data/Player.txt");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(playerEmptyArrayList);
 		}
 		
-		FileInputStream fis = new FileInputStream("Files/Player.txt"); 
+		FileInputStream fis = new FileInputStream("data/Player.txt"); 
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		this.playerArrayList = (ArrayList<Player>) ois.readObject(); // sets the arrayList of players
 		ois.close();
 	}
 	
-	public void readInitialLevelFile() throws IOException, ClassNotFoundException{
-		try {																// verifies if the file exists and is not empty
-			FileInputStream fis = new FileInputStream("Files/InitialLevel.txt");
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			ois.close();
-		}
-		catch (EOFException |FileNotFoundException e) {						// if not it creates it with an empty arrayList serialized
-			ArrayList<InitialLevel> initialLevelEmptyArrayList = new ArrayList<InitialLevel>();
-			FileOutputStream fos = new FileOutputStream("Files/InitialLevel.txt");
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(initialLevelEmptyArrayList);
-		}
-		
-		FileInputStream fis = new FileInputStream("Files/InitialLevel.txt"); 
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		this.initialLevelArrayList = (ArrayList<InitialLevel>) ois.readObject(); // sets the arrayList of players
-		ois.close();
-	}
 	
 	public void menuPlayerChoice() throws IOException, ClassNotFoundException{
 	    System.out.println("Create player (0) / Choose player (index+1)/ Remove player (-(index+1)) size : " + playerArrayList.size()); // choice between create a new player or using an already existing player with its index in playerArrayList
