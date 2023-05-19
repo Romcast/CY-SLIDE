@@ -8,18 +8,22 @@ public class Level extends InitialLevel
 {
 	private int score;
 	private Player player;
+	private boolean isSolvable;
+
 	public Grid grid;
 	public Grid shuffledGrid;
 	
-	public Level(InitialLevel initialLevel, Player player) {
+	public Level(InitialLevel initialLevel, Player player) 
+	{
 		this.goal=initialLevel.goal;
 		this.grid = initialLevel.goal;
 		this.levelNumber = initialLevel.levelNumber;
-		this.player = player;
+		this.player = player; 
 		this.score = 0;
 	}
 
-	public Grid shuffle(Grid baseGrid) {
+	public Grid shuffle(Grid baseGrid) 
+	{
 		Grid shuffledGrid = baseGrid.copyGrid();
 		Random random = new Random();
 	
@@ -59,16 +63,18 @@ public class Level extends InitialLevel
 					int[] randomMove = validMoves.get(random.nextInt(validMoves.size()));
 					shuffledGrid.moveFrame(randomMove, emptyI, emptyJ);
 				}
+
 			}
 		}
 	
 		return shuffledGrid;
 	}
 	public Grid randomShuffle(Grid grid) {
+		
         	int[][] originalGrid = grid.getGrid();
         	int nbrow = grid.getNbLine();
         	int nbColumn = grid.getNbColumn();
-
+		
         	List<Integer> values = new ArrayList<>();
         	for (int i = 0; i < nbrow; i++) {
             	for (int j = 0; j < nbColumn; j++) {
@@ -107,6 +113,7 @@ public class Level extends InitialLevel
 					return false;
 				}
 			}
+		
 		}
 	
 		return true;

@@ -5,6 +5,7 @@ public class Player implements Serializable {
 	static final long serialVersionUID = 1;
 	private String pseudo;
 	private int levelMax;
+	private int[] maxScore[10]
 	private ArrayList<Level> playerLevels;
 	
 	public Player(String pseudo) {
