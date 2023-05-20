@@ -1,0 +1,26 @@
+<project name="Java_Project" default="compile" basedir=".">
+
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="bin"/>
+  <property name="output.file" value="output.txt"/>
+
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" fork="true" includeantruntime="false" />
+  </target>
+
+  <target name="run" depends="compile">
+    <java classname="AppMain" classpath="${build.dir}" fork="true">
+      <redirector output="${output.file}"/>
+    </java>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete file="${output.file}" />
+  </target>
+
+</project>

@@ -13,7 +13,7 @@ public class Game {
     public Game(int nbLevel, ShuffleType type) {
         try {
             if (nbLevel >= 1 && nbLevel <= 10) {
-                String filePath = "../levels/level_" + nbLevel + ".csv";
+                String filePath = "./data/levels/level_" + nbLevel + ".csv";
                 File fileLevel = new File(filePath);
                 this.grid = new Grid(fileLevel);
                 this.level = nbLevel;
