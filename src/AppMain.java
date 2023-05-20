@@ -21,6 +21,7 @@ public class AppMain {
                 String fileName = "../levels/level_" + choice + ".csv";
                 File fileLevel = new File(fileName);
                 Grid level = new Grid(fileLevel);
+                level.shuffle();
                 
                 level.print();
                 while(true){

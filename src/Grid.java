@@ -1,4 +1,7 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Random;
+
 
 public class Grid{
 
@@ -152,7 +155,7 @@ return :
 
 
 
-private void exchangeCell(Cell C1, Cell C2) 
+private void exchangeCells(Cell C1, Cell C2) 
 /*
 
 This method swaps two cells
@@ -173,7 +176,7 @@ parametres :
     
 }
 
-public boolean isNeighbor(Cell C1,Cell C2){
+public boolean areNeighbor(Cell C1,Cell C2){
 
     if (!this.isValidated(C2.getRow(),C2.getColumn())){return false;}
     for (i=0;i<4;i++)
@@ -199,10 +202,10 @@ return :
 { 
 
    
-    if(!this.isNeighbor(C1,C2)){return false;}
+    if(!this.areNeighbor(C1,C2)){return false;}
     
     if((C1.getType()==CellType.EmptyCell && C2.getType()!=CellType.EmptyCell) || (C2.getType()==CellType.EmptyCell && C1.getType()!=CellType.EmptyCell) ){
-        this.exchangeCell(C1,C2);
+        this.exchangeCells(C1,C2);
         
         return true;}
     return false;
@@ -210,6 +213,76 @@ return :
     
 
 }
+
+
+public void shuffle() 
+	{
+		Random random = new Random();
+        int nbEmptyCells,randomEmptyCells,randomMove,iEmpty,jEmpty,iNext,jNext;
+        ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
+        
+		while (!this.wellShuffled()) {
+            
+            listOfEmptyCells = this.listOfEmptyCells();
+            nbEmptyCells = listOfEmptyCells.size(); 
+            randomEmptyCells = random.nextInt(nbEmptyCells);
+            randomMove = random.nextInt(4);
+            iEmpty=listOfEmptyCells.get(randomEmptyCells).getRow();
+            jEmpty=listOfEmptyCells.get(randomEmptyCells).getColumn();
+            iNext=listOfEmptyCells.get(randomEmptyCells).getRow()+move[randomMove][0];
+            jNext=listOfEmptyCells.get(randomEmptyCells).getColumn()+move[randomMove][1];
+            if(this.isValidated(iNext,jNext)){
+                if(this.moveCell(grid[iEmpty][jEmpty],grid[iNext][jNext])){
+                listOfEmptyCells.set(randomEmptyCells, grid[iNext][jNext]);
+            }
+            
+                
+            }
+            print();
+            System.out.println(this.wellShuffled());
+
+
+		}
+	
+		
+	}
+
+
+public boolean wellShuffled() {
+	
+
+        if(nbRows != goal.nbRows || nbColumns != goal.nbColumns) {
+            System.out.println("Error");
+            return false;}
+
+		for (i = 0; i < nbRows; i++) 
+        {
+			for (j = 0; j < nbColumns; j++) 
+            {
+				if (goal.grid[i][j].getType() == CellType.GameCell && goal.grid[i][j].getValue() == grid[i][j].getValue()) {return false; }
+			}
+		}
+        
+		return true;
+	}
+
+public ArrayList<Cell> listOfEmptyCells() {
+    ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
+
+    for (i = 0; i < nbRows; i++) {
+        for (j = 0; j < nbColumns; j++) {
+            if (grid[i][j].getType() == CellType.EmptyCell) {
+                listOfEmptyCells.add(grid[i][j]);
+            }
+        }
+    }
+
+    return listOfEmptyCells;
+}
+
+
+
+
 
 }
 
