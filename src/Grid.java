@@ -1,48 +1,127 @@
-import java.util.ArrayList;
-import java.util.*;
-import java.util.Random;
+import java.io.*;
 
-public class Grid {
-private final int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+public class Grid{
 
-public int[][] grid;
-private int nbLine;
-private int nbColumn;
+public static final int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-int i=0;
-int j=0;
-int w=0;
+private int nbRows;
+private int nbColumns;
+private int scoreMin;
+private int nbLevel;
+private Cell[][] grid;// ++level
+private Grid goal;
+int i,j;
 
-public int getNbLine(){return this.nbLine;}
-public int getNbColumn(){return this.nbColumn;}
-public int[][] getGrid(){return this.grid;}
-
-public Grid(int[][] grid) 
-{
-        int value = 1;
-        nbLine=grid.length;
-        nbColumn=grid[0].length;
-        this.nbLine=nbLine;
-        this.nbColumn=nbColumn;
-        this.grid = new int[nbLine][nbColumn];
-
-        for(i=0;i<nbLine;i++)
-        {
-            for(j=0;j<nbColumn;j++)
-            {
-                this.grid[i][j]= grid[i][j];
-            }
-        }
-        
+public Grid() {
+    nbRows = 0;
+    nbColumns = 0;
+    scoreMin = 0;
+    grid = null;
+    goal = null;
 }
-        
+
+public Grid(File file) 
+{
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        String line = br.readLine();
+        String[] dimensions = line.split(" ");
+        int nbLevel = Integer.parseInt(dimensions[0]);
+        int nbRows = Integer.parseInt(dimensions[1]);
+        int nbColumns = Integer.parseInt(dimensions[2]);
+        Cell[][] gridOfGoal = new Cell[nbRows][nbColumns];
+        this.grid = new Cell[nbRows][nbColumns];
+        this.goal = new Grid();
+        this.nbRows = nbRows;
+        this.nbColumns = nbColumns;
+        this.nbLevel=nbLevel;
+
+        for (i = 0; i < nbRows; i++) {
+            line = br.readLine();
+            String[] values = line.split(" ");
+            for (j = 0; j < nbColumns; j++) 
+            {
+                switch(values[j])
+                {
+                    case ".": 
+                        gridOfGoal[i][j] = new Cell(i,j,0,CellType.EmptyCell);
+                        break;
+                    case "/": 
+                        gridOfGoal[i][j] = new Cell(i,j,0,CellType.UnexistantCell);
+                        break;
+                    default:
+                        gridOfGoal[i][j] = new Cell(i,j,Integer.parseInt(values[j]),CellType.GameCell);
+                        break;
+                    }
+            }
+            }
+        this.goal.goal=null;
+        this.goal.nbRows=nbRows;
+        this.goal.nbColumns=nbColumns;
+        this.goal.grid = new Cell[nbRows][nbColumns];
+
+        for (i = 0; i < nbRows; i++) {
+        for (j = 0; j < nbColumns; j++) {
+        this.goal.grid[i][j] = new Cell(i, j, gridOfGoal[i][j].getValue(), gridOfGoal[i][j].getType());
+    }
+    }
+
+        this.scoreMin=100;//solve
+        for (i = 0; i < nbRows; i++) {
+          for (j = 0; j < nbColumns; j++) {
+        this.grid[i][j] = new Cell(i, j, gridOfGoal[i][j].getValue(), gridOfGoal[i][j].getType());
+         }
+    }
+
+
+
+        }catch (IOException e) {
+            System.out.println("The directory levels isn't on good place : ");
+            e.printStackTrace();
+            }
+}
+
+//faire setter (pas de getter)
+public Cell[][] getGrid(){return this.grid;}
+
 public void print() // Displays a grid
 {
-    for (int i = 0; i < nbLine ; i++) 
+    for (i = 0; i < nbRows ; i++) 
     {
-            for (int j = 0; j < nbColumn; j++) 
+            for (j = 0; j < nbColumns; j++) 
             {
-                System.out.print(this.grid[i][j] + " ");
+                switch(this.grid[i][j].getType())
+                    {
+                    case EmptyCell: 
+                        System.out.print(0 + " ");
+                        break;
+                    case UnexistantCell: 
+                        System.out.print(-1 + " ");
+                        break;
+                    case GameCell: 
+                        System.out.print(this.grid[i][j].getValue() + " ");
+                        break;
+                    default:
+                        break;
+                                    }
+            }
+
+            System.out.print("      ");
+            for (j = 0; j < nbColumns; j++) 
+            {
+                switch(this.goal.grid[i][j].getType())
+                    {
+                    case EmptyCell: 
+                        System.out.print(0 + " ");
+                        break;
+                    case UnexistantCell: 
+                        System.out.print(-1 + " ");
+                        break;
+                    case GameCell: 
+                        System.out.print(this.goal.grid[i][j].getValue() + " ");
+                        break;
+                    default:
+                        break;
+                                    }
             }
             System.out.println();
     }
@@ -50,41 +129,10 @@ public void print() // Displays a grid
         
 }
 
-public boolean moveFrame(int[] direction,int i, int j) 
-/*
-
-This method moves a frame of the grid towards a direction while checking if that is possible
-  
-parametres : 
-            - direction : A direction table of the form {-1,0} to determine in which direction the frame should be moved
-            - i and j : Respectively the line and the column of the frame which must be moved
-return :    
-            true  : The frame has been moved
-            false : The frame has not been moved (because it can't)
-
-*/
-{ 
-
-    if(direction.length != 2)
-    {
-        System.out.println("Il y a un pb ds move la taille direction pas bonne"); // vérifier aussi si direction c bien {-1,0} ou {1,0} ou {0,-1} ou {0,1}
-    }
-    int tmp;
-    int nextI = i+direction[0];
-    int nextJ = j+direction[1];
-
-    if (!(this.isValidated(nextI,nextJ))) {return false;}
-    if (this.grid[nextI][nextJ]!=0 || this.grid[i][j]<=0 ) {return false;} // si la case elle est pas vide ou si la case sélectionne est vide ou -1
-
-    this.exchangeFrame(nextI,nextJ,i,j);
-    return true;
-
-}
-
 public boolean isValidated(int i, int j) 
 /*
 
-This method makes it possible to determine if the coordinates i and j are in the grid's play, that is to say that they are not outside the table or that they do not point to -1
+This method makes it possible to determine if the coordinates i and j are in the grid's play, that is to say that they are not outside the table or that they don't point to UnExistantCell
   
 parametres : 
             i and j : The coordinates to check
@@ -94,187 +142,75 @@ return :
 
 */
 {
-        if(i >= 0 && i < this.nbLine && j >= 0 && j < this.nbColumn) 
+        if((i >= 0) && i < this.nbRows && j >= 0 && j < this.nbColumns) 
         {
-            return (this.grid[i][j]>=0); // != -1 car sinon c'est une bordure
+            return ((this.grid[i][j].getType()!=CellType.UnexistantCell));
         }
 
         return false;
 }
 
-public void exchangeFrame(int i1, int j1, int i2, int j2) 
+
+
+private void exchangeCell(Cell C1, Cell C2) 
 /*
 
-This method swaps two frames
+This method swaps two cells
   
 parametres : 
-            - i1 and j1 : Coordinates of first Frame
-            - i2 and j2 : Coordinates of second Frame
+            
 
 */
 {
-    int tmp = this.grid[i1][j1];
-    this.grid[i1][j1] = this.grid[i2][j2];
-    this.grid[i2][j2] = tmp;// c forcement 0
-}
-
-public boolean isSolvable() 
-
-/*
-
-This method checks if a grid is solvable
-  
-return :    
-            true  : It's solvable
-            false : It's not solvable
-
-*/
-{
-	int reversalCount = 0;
-    int[] flattenedState = new int[this.nbLine * this.nbColumn];
-    int k = 0;
-    for (int i = 0; i < this.nbLine; i++) {
-        for (int j = 0; j < this.nbColumn; j++) {
-            flattenedState[k++] = this.grid[i][j];
-        }
-    }
-    for (int i = 0; i < flattenedState.length - 1; i++) 
-	{
-        for (int j = i + 1; j < flattenedState.length; j++) 
-		{
-            if (flattenedState[i] > 0 && flattenedState[j] > 0 && flattenedState[i] > flattenedState[j]) 
-			{
-                reversalCount++;
-            }
-        }
-    }
-    if (this.nbColumn % 2 == 1) 
-	{
-        return reversalCount % 2 == 0;
-    } else 
-	{
-        int positionEmpty[] = this.findpositionEmpty();
-        return (positionEmpty[0] + reversalCount) % 2 == 1;
-    }
-}
-
-public int[] findpositionEmpty() // ajouter si trop ou pas assez de case vide !!!!!!!!!!!!!!!!!!!!!!!!!
-
-/*
-
-This method for fine void frame
-  
-return :    
-            [i,j]  : Respectively the line and the column of void frame
-            [-1,-1] : Void frame was not found
-
-*/
-
-{
-    int position[] = new int[2];
-    for (i = 0; i < this.nbLine; i++) 
-	{
-        for (j = 0; j < this.nbColumn; j++) 
-		{
-            if (this.grid[i][j] == 0) 
-			{
-                position[0]=i;
-                position[1]=j;
-                return (position);
-            }
-        }
-    }
-    position[0]=-1;
-    position[1]=-1;
-    return (position); // La case vide n'a pas ete trouve
+    Integer tmpValue = C1.getValue();
+    CellType tmpType = C1.getType();
+    
+    C1.setType(C2.getType());
+    C1.setValue(C2.getValue());
+    
+    C2.setType(tmpType);
+    C2.setValue(tmpValue);
     
 }
 
-public boolean solve(Grid goal) 
+public boolean isNeighbor(Cell C1,Cell C2){
 
+    if (!this.isValidated(C2.getRow(),C2.getColumn())){return false;}
+    for (i=0;i<4;i++)
+    {
+        if( C2.getRow()==move[i][0]+C1.getRow() &&  C2.getColumn()==move[i][1]+C1.getColumn()){return true;}
+        
+    }
+    return false;
+}
+
+public boolean moveCell(Cell C1, Cell C2) 
 /*
 
-This method find the best solution of one grid   A modfifier pour sauvegarder le path
+This method moves a cell of the grid towards a direction while checking if that is possible
   
 parametres : 
-            goal : The final grid, the result or in other words the solution
 
 return :    
-            true  : Solution find
-            false : Solution no find
+            true  : The cell has been moved
+            false : The cell has not been moved (because it can't)
 
 */
-{
+{ 
 
-    Grid positionInitial = this;
-    int depthMax = 0;
-    if (!positionInitial.isSolvable())
-	{
-        return false;
-    }
-    else 
-	{
-    while (true) 
-    {
-        positionInitial = this;
-        Set<String> visited = new HashSet<>(); // Ensemble pour stocker les statues dejà visites
-        Node n = new Node(positionInitial, 0, null);
-        Deque<Node> pile = new ArrayDeque<>(); // Pile pour la recherche en profondeur
-            
-        pile.push(n); // Ajouter le statue initial à la pile
-        visited.add(Arrays.deepToString(positionInitial.grid)); // Ajouter le statue initial aux statues visited
-            
-        while (!pile.isEmpty()) {
-            Node node = pile.pop(); // Recuperer le nœud en haut de la pile
-                
-            if (node.isSolved(goal)) {
-                node.print();
-                return true;
-            }
-                
-            if (node.getCost() < depthMax) { // Limite la profondeur de recherche actuelle
-                int[] positionEmpty = node.findpositionEmpty();
-                
-                for (int[] shifting : move) {
-                    int newX = positionEmpty[0] + shifting[0];
-                    int newY = positionEmpty[1] + shifting[1];
-                    
-                    if (positionInitial.isValidated(newX, newY)) {
-                            Grid newStatue = node.getStatue().copyGrid();
-                            newStatue.exchangeFrame(positionEmpty[0], positionEmpty[1], newX, newY);
-                            
-                            String statueString = Arrays.deepToString(newStatue.grid);
-                            if (!visited.contains(statueString)) {
-                                Node newNode = new Node(newStatue, node.getCost() + 1, node);
-                                pile.push(newNode);
-                                visited.add(statueString);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            depthMax++; // Augmenter la profondeur de recherche pour la prochaine iteration
-        	}
-        }
-    }
+   
+    if(!this.isNeighbor(C1,C2)){return false;}
+    
+    if((C1.getType()==CellType.EmptyCell && C2.getType()!=CellType.EmptyCell) || (C2.getType()==CellType.EmptyCell && C1.getType()!=CellType.EmptyCell) ){
+        this.exchangeCell(C1,C2);
+        
+        return true;}
+    return false;
+    
+    
 
-    public Grid copyGrid() 
-	{
-        int[][] grid = new int[this.nbLine][this.nbColumn];
-        Grid copy = new Grid(grid);
+}
 
-
-        for (int i = 0; i < this.nbLine; i++) {
-            for (int j = 0; j < this.nbColumn; j++) {
-                copy.grid[i][j] = this.grid[i][j];
-            }
-        }
-        copy.nbColumn=this.nbColumn;
-        copy.nbLine=this.nbLine;
-
-        return copy;
 }
 
 
-}
