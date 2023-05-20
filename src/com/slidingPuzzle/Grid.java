@@ -106,6 +106,7 @@ public void print() // Displays a grid
             }
 
             System.out.print("      ");
+            if(this.goal != null){
             for (j = 0; j < nbColumns; j++) 
             {
                 switch(this.goal.grid[i][j].getType())
@@ -122,6 +123,7 @@ public void print() // Displays a grid
                     default:
                         break;
                                     }
+            }
             }
             System.out.println();
     }
@@ -284,6 +286,42 @@ public boolean isSolvable(){
     return true;
 }
 
+public boolean gameOver()
+{
+
+    for (i = 0; i < this.nbRows; i++) 
+    {
+        for (j = 0; j < this.nbColumns; j++) 
+        {
+            if (!this.grid[i][j].equals(this.goal.grid[i][j])) {return false; }
+            
+        }
+    }
+    return true;
+}
+
+public ArrayList<int[]> nbPossibleMove(int i,int j){
+    ArrayList<int[]> possibleMove = new ArrayList<>();
+    int m,nextI,nextJ,compteur;
+    for (m=0;m<4;m++)
+    {
+        nextI=i+move[m][0];
+        nextJ=j+move[m][1];
+
+        if (this.isValidated(nextI,nextJ))
+        {
+            if(this.grid[nextI][nextJ].getType() == CellType.EmptyCell)
+            {
+                possibleMove.add(move[m]);
+                
+            }
+        }
+            
+    }
+
+    return possibleMove;
+
+}
 
 }
 
