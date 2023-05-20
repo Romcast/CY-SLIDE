@@ -9,16 +9,14 @@ public static final int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
 private int nbRows;
 private int nbColumns;
-private int scoreMin;
 private int nbLevel;
-private Cell[][] grid;// ++level
+private Cell[][] grid;
 private Grid goal;
 int i,j;
 
 public Grid() {
     nbRows = 0;
     nbColumns = 0;
-    scoreMin = 0;
     grid = null;
     goal = null;
 }
@@ -68,7 +66,6 @@ public Grid(File file)
     }
     }
 
-        this.scoreMin=100;//solve
         for (i = 0; i < nbRows; i++) {
           for (j = 0; j < nbColumns; j++) {
         this.grid[i][j] = new Cell(i, j, gridOfGoal[i][j].getValue(), gridOfGoal[i][j].getType());
@@ -215,7 +212,7 @@ return :
 }
 
 
-public void shuffle() 
+public void stepByStepShuffle() 
 	{
 		Random random = new Random();
         int nbEmptyCells,randomEmptyCells,randomMove,iEmpty,jEmpty,iNext,jNext;
@@ -238,8 +235,7 @@ public void shuffle()
             
                 
             }
-            print();
-            System.out.println(this.wellShuffled());
+            
 
 
 		}
@@ -247,6 +243,9 @@ public void shuffle()
 		
 	}
 
+public void randomShuffled(){
+    
+}
 
 public boolean wellShuffled() {
 	
@@ -281,7 +280,9 @@ public ArrayList<Cell> listOfEmptyCells() {
 }
 
 
-
+public boolean isSolvable(){
+    return true;
+}
 
 
 }

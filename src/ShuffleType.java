@@ -1,0 +1,1 @@
+public enum ShuffleType {StepByStep,Random;}
