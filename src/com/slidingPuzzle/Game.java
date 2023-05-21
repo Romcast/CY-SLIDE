@@ -27,7 +27,7 @@ public class Game {
                         break;
                     case Random:
                         this.grid.randomShuffled();
-                        this.isSolvable = true;
+                        this.isSolvable = true;//A changer
                         break;
 
                     default:

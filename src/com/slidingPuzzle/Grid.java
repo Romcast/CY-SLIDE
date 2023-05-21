@@ -245,9 +245,41 @@ public void stepByStepShuffle()
 		
 	}
 
-public void randomShuffled(){
+ public void randomShuffled() 
+ {
     
+    Random random = new Random();
+    ArrayList<Cell> cellsList = new ArrayList<>();
+    int randomIndex;
+    Cell randomCell;
+
+    // Collect all the non-UnexistantCell cells from the goal grid
+    for (i = 0; i < this.nbRows; i++) {
+        for (j = 0; j < this.nbColumns; j++) {
+            if (this.goal.grid[i][j].getType() != CellType.UnexistantCell) {
+                cellsList.add(this.goal.grid[i][j]);
+            }
+        }
+    }
+
+    // Shuffle the cellsList randomly
+    while (!this.wellShuffled()) {
+        for (i = 0; i < this.nbRows; i++) {
+            for (j = 0; j < this.nbColumns; j++) {
+                if (this.isValidated(i, j) && !cellsList.isEmpty()) {
+                    randomIndex = random.nextInt(cellsList.size());
+                    randomCell = cellsList.get(randomIndex);
+                    this.grid[i][j].setType(randomCell.getType());
+                    this.grid[i][j].setValue(randomCell.getValue());
+                    cellsList.remove(randomIndex);
+                }
+            }
+        }
+    }
+
+
 }
+
 
 public boolean wellShuffled() {
 	
