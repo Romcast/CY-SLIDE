@@ -80,6 +80,13 @@ public Grid(File file)
             }
 }
 
+	public int getNbRows() {
+	return this.nbRows;
+}
+
+public int getNbColumns() {
+	return this.nbColumns;
+}
 //faire setter (pas de getter)
 public Cell[][] getGrid(){return this.grid;}
 
