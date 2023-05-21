@@ -20,7 +20,7 @@ public void Play()
     int  i1, i2, j1, j2;
     int shuffleChoice=-1;
     int choice =-1;
-    ShuffleType type;
+    ShuffleType type = ShuffleType.StepByStep;
 
     while (choice < 1 || choice > 10) {
             System.out.println("A quel niveau voulez-vous jouer ?");
@@ -61,8 +61,7 @@ public void Play()
             }
 }
    
-    
-    Game game = new Game(choice,ShuffleType.StepByStep);
+    Game game = new Game(choice,type);
 
 
 while (!game.getGrid().gameOver()) {

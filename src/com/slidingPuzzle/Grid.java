@@ -257,9 +257,9 @@ public void stepByStepShuffle()
     
     Random random = new Random();
     ArrayList<Cell> cellsList = new ArrayList<>();
+    ArrayList<Cell> cpCellsList = new ArrayList<>();
     int randomIndex;
     Cell randomCell;
-
     // Collect all the non-UnexistantCell cells from the goal grid
     for (i = 0; i < this.nbRows; i++) {
         for (j = 0; j < this.nbColumns; j++) {
@@ -271,14 +271,17 @@ public void stepByStepShuffle()
 
     // Shuffle the cellsList randomly
     while (!this.wellShuffled()) {
+    cpCellsList.addAll(cellsList);
         for (i = 0; i < this.nbRows; i++) {
             for (j = 0; j < this.nbColumns; j++) {
-                if (this.isValidated(i, j) && !cellsList.isEmpty()) {
-                    randomIndex = random.nextInt(cellsList.size());
-                    randomCell = cellsList.get(randomIndex);
+                if (this.isValidated(i, j) && !cpCellsList.isEmpty()) {
+                    randomIndex = random.nextInt(cpCellsList.size());
+                    randomCell = cpCellsList.get(randomIndex);
                     this.grid[i][j].setType(randomCell.getType());
                     this.grid[i][j].setValue(randomCell.getValue());
-                    cellsList.remove(randomIndex);
+                    this.grid[i][j].setRow(i);
+                    this.grid[i][j].setColumn(j);
+                    cpCellsList.remove(randomIndex);
                 }
             }
         }

@@ -30,7 +30,10 @@ public void setValue(Integer value)
 
     if(this.type == CellType.GameCell) 
     {this.value=value;}
+    else {value=null;}
 }
+public void setRow(int row){this.row=row;}
+public void setColumn(int column){this.column=column;}
 
 public int getRow() {return this.row;}
 public int getColumn() {return this.column;}
