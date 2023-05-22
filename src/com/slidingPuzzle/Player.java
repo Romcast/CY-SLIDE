@@ -15,6 +15,9 @@ public Player(String pseudo){
     
 
 }
+public int getLevelMax() {
+	return this.levelMax;
+}
 public void Play()
 {
     Scanner scanner = new Scanner(System.in);
