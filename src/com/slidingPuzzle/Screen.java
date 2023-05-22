@@ -20,7 +20,7 @@ public class Screen extends Application{
 	
 	
 	
-	File fileLevel = new File("H:/Documents/cours/projet/SLIDE-main/levels/level_7.csv");
+	File fileLevel = new File("./data/levels/level_1.csv");
     Grid level = new Grid(fileLevel);
 	/*String fileName = "../levels/level_1.csv";
     File fileLevel = new File(fileName);

@@ -1,8 +1,9 @@
 import java.util.Scanner;
-import java.io.File;
+import java.io.*;
 
 
-public class Player{
+public class Player implements Serializable
+{
 
 private String pseudo;
 private int levelMax;
@@ -128,4 +129,6 @@ while (!game.getGrid().gameOver()) {
 scanner.close();
 
 }
+
+public String getPseudo() {return this.pseudo;}
 }
