@@ -24,7 +24,7 @@ import javafx.event.*;
 
 public class Main extends Application {
 	
-	public Player[] readPlayerFile() throws IOException, ClassNotFoundException {
+	public static Player[] readPlayerFile() throws IOException, ClassNotFoundException {
 		try {																// verifies if the file exists and is not empty
 			FileInputStream fis = new FileInputStream("data/Player.txt");
 			ObjectInputStream ois = new ObjectInputStream(fis);
