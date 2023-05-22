@@ -22,8 +22,9 @@ import java.io.*;
 import java.util.HashMap;
 public class Main extends Application {
 	
-		int i;
-	 Player[] playerArray= new Player[5];
+	int i;
+	Player[] playerArray= new Player[5];
+	int j;
 	 
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
@@ -72,13 +73,14 @@ public class Main extends Application {
 									   VBox vboxP1=new VBox();
 									   Label pseudonyme1= new Label("New pseudo");
 									   TextField choosePseudo= new TextField();
-									   String pseudoEntered = choosePseudo.getText();
+
 									   Button btnpseudo1=new Button("Select");
 									   
 									   btnpseudo1.setOnAction(new EventHandler<ActionEvent>(){
 										   
 										   public void handle(ActionEvent t) {
 											   
+											   String pseudoEntered = choosePseudo.getText();
 											   playerArray[index]=new Player(pseudoEntered);
 											   try {
 												writePlayerFile(playerArray);
@@ -86,7 +88,31 @@ public class Main extends Application {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
 											}
-											   System.out.print(playerArray[index].getPseudo());
+											   BorderPane newrootPlayer2 =new BorderPane();
+		                                       int maxLevel=playerArray[index].getLevelMax();
+		                                       VBox description=new VBox();
+											   VBox[] vboxP2=new VBox[maxLevel];
+
+											    Label Level= new Label("Level  Score Shuffle  ShuffleRandom ");
+											    Level.setFont(new Font("Berlin Sans FB",40));
+		                    
+		                                        description.getChildren().add(Level);
+		                                        description.setAlignment(Pos.CENTER);
+		                                        newrootPlayer2.setTop(description);
+		                                        for(j=0;j<maxLevel;j++){
+		                                        	vboxP2[j] = new VBox();
+			                                        Hyperlink Levelj= new Hyperlink("Level"+(j+1));
+			                                        Levelj.setFont(new Font("Berlin Sans FB",40));
+			                                        //Label scoreShuffle= new Label("Score Shuffle");
+			                                        //Label scoreRandomShuffle=new Label("Score ShuffleRandom");
+			                                       	vboxP2[j].getChildren().add(Levelj);
+			                                       	vboxP2[j].setAlignment(Pos.CENTER);
+			                                        newrootPlayer2.setCenter(vboxP2[j]);
+		                                       }
+											   
+											   Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+											   primaryStage.setScene(new Scene(newrootPlayer2,screenBounds.getWidth(), screenBounds.getHeight()-25));
+											   
 											   
 										   }});
 									   pseudonyme1.setFont(new Font("Berlin Sans FB",50));
@@ -102,9 +128,41 @@ public class Main extends Application {
 							   
 							   pseudo.put(i, tmp);
 						   }else {
-							   
+							   final int index = i;
 							   Hyperlink tmp=new Hyperlink(playerArray[i].getPseudo());
 							   tmp.setFont(new Font("Berlin Sans FB",80));
+							   tmp.setOnAction(new EventHandler<ActionEvent>(){
+								   
+								   public void handle(ActionEvent t){
+									   BorderPane newrootPlayer2 =new BorderPane();
+                                       int maxLevel=playerArray[index].getLevelMax();
+                                       VBox description=new VBox();
+									   VBox[] vboxP2=new VBox[maxLevel];
+
+									    Label Level= new Label("Level  Score Shuffle  ShuffleRandom ");
+									    Level.setFont(new Font("Berlin Sans FB",40));
+                                        
+                                       // Label scoreShuffle= new Label("Score Shuffle");
+                                        //Label scoreRandomShuffle=new Label("Score ShuffleRandom");
+                                        description.getChildren().add(Level);
+                                        description.setAlignment(Pos.CENTER);
+                                        newrootPlayer2.setTop(description);
+                                        for(j=0;j<maxLevel;j++){
+                                        	vboxP2[j] = new VBox();
+	                                        Hyperlink Levelj= new Hyperlink("Level"+(j+1));
+	                                        Levelj.setFont(new Font("Berlin Sans FB",40));
+	                                        //Label scoreShuffle= new Label("Score Shuffle");
+	                                        //Label scoreRandomShuffle=new Label("Score ShuffleRandom");
+	                                       	vboxP2[j].getChildren().add(Levelj);
+	                                       	vboxP2[j].setAlignment(Pos.CENTER);
+	                                        newrootPlayer2.setCenter(vboxP2[j]);
+                                       }
+									   
+									   Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+									   primaryStage.setScene(new Scene(newrootPlayer2,screenBounds.getWidth(), screenBounds.getHeight()-25));
+								   }});
+							   
+							   
 							   pseudo.put(i, tmp); 
 						   }
 						   
@@ -147,12 +205,12 @@ public class Main extends Application {
 		}
 		catch (EOFException |FileNotFoundException e) {						// if not it creates it with an empty arrayList serialized
 			Player[] playerEmptyArray = {null,null,null,null,null};
-			FileOutputStream fos = new FileOutputStream("data/Player.txt");
+			FileOutputStream fos = new FileOutputStream("Player.txt");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(playerEmptyArray);
 		}
 		
-		FileInputStream fis = new FileInputStream("data/Player.txt"); 
+		FileInputStream fis = new FileInputStream("Player.txt"); 
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		Player[] playerArray = (Player[]) ois.readObject(); // sets the arrayList of players
 		ois.close();
@@ -160,7 +218,7 @@ public class Main extends Application {
 	}
 		public static void writePlayerFile(Player[] playerArray) throws IOException, ClassNotFoundException {
 		
-		FileOutputStream fos = new FileOutputStream("data/Player.txt");
+		FileOutputStream fos = new FileOutputStream("Player.txt");
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(playerArray);
 		oos.close();
@@ -171,5 +229,4 @@ public class Main extends Application {
 		launch(args);
 	}
 }
-
 
