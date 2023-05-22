@@ -1,5 +1,14 @@
 package application;
 	
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -14,6 +23,27 @@ import javafx.stage.Screen;
 import javafx.event.*;
 
 public class Main extends Application {
+	
+	public Player[] readPlayerFile() throws IOException, ClassNotFoundException {
+		try {																// verifies if the file exists and is not empty
+			FileInputStream fis = new FileInputStream("data/Player.txt");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			ois.close();
+		}
+		catch (EOFException |FileNotFoundException e) {						// if not it creates it with an empty arrayList serialized
+			Player[] playerEmptyArray = {null,null,null,null,null};
+			FileOutputStream fos = new FileOutputStream("data/Player.txt");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(playerEmptyArray);
+		}
+		
+		FileInputStream fis = new FileInputStream("data/Player.txt"); 
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		Player[] playerArray = (Player[]) ois.readObject(); // sets the arrayList of players
+		ois.close();
+		return playerArray;
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
