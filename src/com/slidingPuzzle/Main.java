@@ -125,12 +125,12 @@ public class Main extends Application {
 		}
 		catch (EOFException |FileNotFoundException e) {						// if not it creates it with an empty arrayList serialized
 			Player[] playerEmptyArray = {null,null,null,null,null};
-			FileOutputStream fos = new FileOutputStream("data\Player.txt");
+			FileOutputStream fos = new FileOutputStream("data/Player.txt");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(playerEmptyArray);
 		}
 		
-		FileInputStream fis = new FileInputStream("data\Player.txt"); 
+		FileInputStream fis = new FileInputStream("data/Player.txt"); 
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		Player[] playerArray = (Player[]) ois.readObject(); // sets the arrayList of players
 		ois.close();
@@ -138,7 +138,7 @@ public class Main extends Application {
 	}
 		public static void writePlayerFile(Player[] playerArray) throws IOException, ClassNotFoundException {
 		
-		FileOutputStream fos = new FileOutputStream("data\Player.txt");
+		FileOutputStream fos = new FileOutputStream("data/Player.txt");
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(playerArray);
 		oos.close();
