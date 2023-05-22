@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.io.*;
 import java.util.HashMap;
 public class Main extends Application {
-
 	
+		int i;
+	 Player[] playerArray= new Player[5];
+	 
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
 		try {
@@ -47,7 +49,7 @@ public class Main extends Application {
 					   Label labelPlayer1= new Label("Pick a player");
 					   labelPlayer1.setFont(new Font("Berlin Sans FB",100));
 					   
-					   Player[] playerArray= new Player[5];
+					   //Player[] playerArray= new Player[5];
 					try {
 						playerArray = readPlayerFile();
 					} catch (ClassNotFoundException | IOException e) {
@@ -57,17 +59,36 @@ public class Main extends Application {
 					   HashMap<Integer, Hyperlink> pseudo = new HashMap<Integer, Hyperlink>();
 
 					   
-					   int i;
+					  // int i;
 					   for(i=0;i<5;i++) {
 						   if(playerArray[i]==null) {
+							   final int index = i;
 							   Hyperlink tmp=new Hyperlink("New Player");
+							   
 							   tmp.setOnAction(new EventHandler<ActionEvent>(){
+								   
 								   public void handle(ActionEvent t){
 									   BorderPane newrootPlayer1 =new BorderPane();
 									   VBox vboxP1=new VBox();
 									   Label pseudonyme1= new Label("New pseudo");
 									   TextField choosePseudo= new TextField();
+									   String pseudoEntered = choosePseudo.getText();
 									   Button btnpseudo1=new Button("Select");
+									   
+									   btnpseudo1.setOnAction(new EventHandler<ActionEvent>(){
+										   
+										   public void handle(ActionEvent t) {
+											   
+											   playerArray[index]=new Player(pseudoEntered);
+											   try {
+												writePlayerFile(playerArray);
+											} catch (ClassNotFoundException | IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											   System.out.print(playerArray[index].getPseudo());
+											   
+										   }});
 									   pseudonyme1.setFont(new Font("Berlin Sans FB",50));
 									   btnpseudo1.setFont(new Font("Berlin Sans FB",25));
 									   vboxP1.setPadding(new Insets(0, 600, 0, 600));
@@ -81,6 +102,7 @@ public class Main extends Application {
 							   
 							   pseudo.put(i, tmp);
 						   }else {
+							   
 							   Hyperlink tmp=new Hyperlink(playerArray[i].getPseudo());
 							   tmp.setFont(new Font("Berlin Sans FB",80));
 							   pseudo.put(i, tmp); 
@@ -125,12 +147,12 @@ public class Main extends Application {
 		}
 		catch (EOFException |FileNotFoundException e) {						// if not it creates it with an empty arrayList serialized
 			Player[] playerEmptyArray = {null,null,null,null,null};
-			FileOutputStream fos = new FileOutputStream("data/Player.txt");
+			FileOutputStream fos = new FileOutputStream("Player.txt");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(playerEmptyArray);
 		}
 		
-		FileInputStream fis = new FileInputStream("data/Player.txt"); 
+		FileInputStream fis = new FileInputStream("Player.txt"); 
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		Player[] playerArray = (Player[]) ois.readObject(); // sets the arrayList of players
 		ois.close();
@@ -138,7 +160,7 @@ public class Main extends Application {
 	}
 		public static void writePlayerFile(Player[] playerArray) throws IOException, ClassNotFoundException {
 		
-		FileOutputStream fos = new FileOutputStream("data/Player.txt");
+		FileOutputStream fos = new FileOutputStream("Player.txt");
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(playerArray);
 		oos.close();
@@ -149,6 +171,5 @@ public class Main extends Application {
 		launch(args);
 	}
 }
-
 
 
