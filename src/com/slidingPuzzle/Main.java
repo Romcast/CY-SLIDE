@@ -44,6 +44,14 @@ public class Main extends Application {
 		return playerArray;
 	}
 	
+	public static void writePlayerFile(Player[] playerArray) throws IOException, ClassNotFoundException {
+		
+		FileOutputStream fos = new FileOutputStream("data/Player.txt");
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		oos.writeObject(playerArray);
+		oos.close();
+	}
+	
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
 		try {
