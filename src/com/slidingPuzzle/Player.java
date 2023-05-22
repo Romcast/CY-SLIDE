@@ -62,9 +62,10 @@ public void Play()
 }
    
     Game game = new Game(choice,type);
-
+    //System.out.println(game.getIsSolvable());
 
 while (!game.getGrid().gameOver()) {
+	
     game.print();
     System.out.println("Quelle case voulez-vous modifier ?");
     

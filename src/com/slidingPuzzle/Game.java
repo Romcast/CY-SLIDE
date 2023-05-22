@@ -23,15 +23,17 @@ public class Game {
                 switch (type) {
                     case StepByStep:
                         this.grid.stepByStepShuffle();
-                        this.isSolvable = this.grid.isSolvable();
+                        this.isSolvable = true;
                         break;
                     case Random:
+                    	
                         this.grid.randomShuffled();
-                        this.isSolvable = true;//A changer
+                        
+                        this.isSolvable = this.grid.isSolvable();//A changer
                         break;
 
                     default:
-                        this.grid.randomShuffled();
+                        this.grid.stepByStepShuffle();
                         this.isSolvable = true;
                         break;
                 }
@@ -46,6 +48,9 @@ public class Game {
 
     public Grid getGrid() {
         return this.grid;
+    }
+    public boolean getIsSolvable() {
+    	return this.isSolvable;
     }
 
     public void print() {

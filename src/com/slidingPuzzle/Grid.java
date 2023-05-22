@@ -161,7 +161,7 @@ return :
 
 
 
-private void exchangeCells(Cell C1, Cell C2) 
+public void exchangeCells(Cell C1, Cell C2) 
 /*
 
 This method swaps two cells
@@ -226,9 +226,10 @@ public void stepByStepShuffle()
 		Random random = new Random();
         int nbEmptyCells,randomEmptyCells,randomMove,iEmpty,jEmpty,iNext,jNext;
         ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
-        
-		while (!this.wellShuffled()) {
+        int l = 0;
+		while (!this.wellShuffled() && l<100) {
             
+			l++;
             listOfEmptyCells = this.listOfEmptyCells();
             nbEmptyCells = listOfEmptyCells.size(); 
             randomEmptyCells = random.nextInt(nbEmptyCells);
@@ -268,10 +269,12 @@ public void stepByStepShuffle()
             }
         }
     }
-
+    
     // Shuffle the cellsList randomly
     while (!this.wellShuffled()) {
     cpCellsList.addAll(cellsList);
+   
+   
         for (i = 0; i < this.nbRows; i++) {
             for (j = 0; j < this.nbColumns; j++) {
                 if (this.isValidated(i, j) && !cpCellsList.isEmpty()) {
@@ -282,6 +285,7 @@ public void stepByStepShuffle()
                     this.grid[i][j].setRow(i);
                     this.grid[i][j].setColumn(j);
                     cpCellsList.remove(randomIndex);
+                    
                 }
             }
         }
@@ -302,7 +306,7 @@ public boolean wellShuffled() {
         {
 			for (j = 0; j < nbColumns; j++) 
             {
-				if (goal.grid[i][j].getType() == CellType.GameCell && goal.grid[i][j].getValue() == grid[i][j].getValue()) {return false; }
+				if (this.goal.grid[i][j].getType() == CellType.GameCell && this.goal.grid[i][j].getValue() == this.grid[i][j].getValue()) {return false; }
 			}
 		}
         
@@ -324,9 +328,43 @@ public ArrayList<Cell> listOfEmptyCells() {
 }
 
 
-public boolean isSolvable(){
-    return true;
+public boolean isSolvable() {
+    int reversalCount = 0;
+    int emptyRow;
+    int[] flattenedState = new int[this.nbRows * this.nbColumns];
+    int k = 0;
+    
+    for (i = 0; i < this.nbRows; i++) {
+        for (j = 0; j < this.nbColumns; j++) {
+            if (this.grid[i][j].getType() == CellType.GameCell) {
+                flattenedState[k++] = this.grid[i][j].getValue();
+            }
+        }
+    }
+    
+    for (i = 0; i < flattenedState.length - 1; i++) {
+        for (j = i + 1; j < flattenedState.length; j++) {
+            if (flattenedState[i] > flattenedState[j]) {
+                reversalCount++;
+            }
+        }
+    }
+    
+    if (flattenedState.length % 2 == 1) {
+        return reversalCount % 2 == 0;
+    } else {
+    	
+    	ArrayList<Cell> listOfEmptyCells = this.listOfEmptyCells();
+    	int emptyRowSum = 0;
+    	for (Cell emptyCell : listOfEmptyCells) {
+    	    emptyRow = emptyCell.getRow();
+    	    emptyRowSum += emptyRow;
+    	}
+    	return (emptyRowSum + reversalCount) % 2 == 1;
+    }
 }
+
+
 
 public boolean gameOver()
 {
@@ -344,7 +382,7 @@ public boolean gameOver()
 
 public ArrayList<int[]> nbPossibleMove(int i,int j){
     ArrayList<int[]> possibleMove = new ArrayList<>();
-    int m,nextI,nextJ,compteur;
+    int m,nextI,nextJ;
     for (m=0;m<4;m++)
     {
         nextI=i+move[m][0];
