@@ -1,13 +1,14 @@
 
 import java.io.File;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.application.Application;
-
+//import javafx.css.*;
 import javafx.scene.input.*;
 
 import javafx.scene.layout.*;
 
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,7 +31,6 @@ public class Screen extends Application{
 	@Override     
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("CY SLIDE");
-		//Text level = new Text(20, 100, "Niveau");
 		GridPane gridpane= new GridPane();
 		
 		
@@ -40,7 +40,7 @@ public class Screen extends Application{
 				button.setPrefSize(100, 100);
 				button.setMinSize(70, 70);
 				button.setMaxSize(150,150);
-				//button.setStyle("-fx-background-color: white;");
+				button.setFont(new Font("Berlin Sans FB",30));
             	gridpane.add(button,j,i);
             	
             	
@@ -54,8 +54,9 @@ public class Screen extends Application{
                     break;
                     
                 case UnexistantCell: 
-                	buttonText="-";
+                	buttonText="";
                 	button.setText(buttonText);
+                	button.setStyle("-fx-background-color: grey;");
                     break;
                     
                 case GameCell: 
@@ -66,12 +67,6 @@ public class Screen extends Application{
                 default:
                     break;
                 }
-				
-				/*button.setOnAction(event ->{
-					int column=gridpane.getColumnIndex(button);
-					int row=gridpane.getRowIndex(button);
-					System.out.println(row+","+column);
-					});*/
 				
 				button.setOnAction(new EventHandler<ActionEvent>(){
 					
@@ -132,7 +127,6 @@ public class Screen extends Application{
 		});
 		
 		
-		
 		Button randomShuffle=new Button("Random shuffle");
 		randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -143,12 +137,14 @@ public class Screen extends Application{
 		});
 		
 		
-		
-		
 		HBox shuffleBox=new HBox(shuffle,randomShuffle);
 		Text levelName=new Text("Level");
+		//levelName.
 		VBox root=new VBox(levelName,gridpane,shuffleBox);
-		//root.setPadding(new Insets(20,20,10));
+		root.setAlignment(Pos.CENTER);
+		shuffleBox.setAlignment(Pos.CENTER);
+		gridpane.setAlignment(Pos.CENTER);
+		root.setPadding(new Insets(20));
 		root.setSpacing(10);
 		
 		Scene scene=new Scene(root,600,600);
@@ -156,9 +152,6 @@ public class Screen extends Application{
 		primaryStage.show();
 		}
 		
-	
-	
-	
 	
 	public void updateGrid(GridPane gridpane, Grid grid) {
 		for (int i=0; i<grid.getNbRows(); i++) {
@@ -172,7 +165,7 @@ public class Screen extends Application{
     				button.setText(buttonText);
                     break;
                 case UnexistantCell: 
-                	buttonText="-";
+                	buttonText="";
                 	button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); // getChildren() returns a list
     				button.setText(buttonText);
                     break;
@@ -184,12 +177,7 @@ public class Screen extends Application{
                 default:
                     break;
                 }
-				//System.out.println(value);
-				/*Button button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); // getChildren() returns a list
-				button.setText(value.toString());
-				if (value==0) {
-					button.setText(" ");
-				}*/
+				
 			}
 		}
 	}
