@@ -19,7 +19,7 @@ public Player(String pseudo){
 
 public int getLevelMax() {return this.levelMax;}
 public String getPseudo() {return this.pseudo;}
-
+public Game[] getGameArray() {return this.gameArray;}
 
 
 public void Play()
