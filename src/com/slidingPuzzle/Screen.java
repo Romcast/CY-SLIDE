@@ -1,5 +1,9 @@
 
 import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Random;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.application.Application;
@@ -80,8 +84,11 @@ public class Screen extends Application{
         					column=gridpane.getColumnIndex(button);
         					System.out.println(row +","+column);
         					System.out.println("init");
-        					
-        				}
+        			
+        	                    
+        	                    
+        	                }         					
+        				
         				else {
         					
         					int row2=gridpane.getRowIndex(button);

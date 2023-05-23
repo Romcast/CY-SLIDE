@@ -7,7 +7,8 @@ public class Player implements Serializable
 
 private String pseudo;
 private int levelMax;
-private Game[] gameArray;  // curentGame, if player want continue after 
+private Game[] gameArray;  // curentGame, if player want continue after
+ 
 //listescore
 public Player(String pseudo){
     this.pseudo=pseudo;
