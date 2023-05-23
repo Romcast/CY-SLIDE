@@ -333,8 +333,8 @@ public class Main extends Application {
 				    } catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();		
-					chooseLevel(primaryStage,index);
 					}
+				    chooseLevel(primaryStage,index);
 		    	}
 		    });
 		    Button btnback=new Button("Go back to the selection");
