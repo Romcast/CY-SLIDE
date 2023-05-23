@@ -199,7 +199,7 @@ public class Main extends Application {
 
 	public static Player[] readPlayerFile() throws IOException, ClassNotFoundException {
 		try {																// verifies if the file exists and is not empty
-			FileInputStream fis = new FileInputStream("Player.txt");
+			FileInputStream fis = new FileInputStream("data/Player.txt");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ois.close();
 		}
