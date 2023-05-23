@@ -1,9 +1,5 @@
 
 import java.io.File;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Random;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.application.Application;
@@ -23,9 +19,9 @@ import javafx.scene.control.Button;
 public class Screen extends Application{   
 	
 	
-	
-	File fileLevel = new File("./data/levels/level_1.csv");
-    Grid level = new Grid(fileLevel);
+	Game game=new Game(5);
+	//File fileLevel = new File("H:/Documents/cours/projet/SLIDE-main/levels/level_7.csv");
+    //Grid level = new Grid(fileLevel);
 	/*String fileName = "../levels/level_1.csv";
     File fileLevel = new File(fileName);
     Grid level = new Grid(fileLevel);*/
@@ -38,8 +34,8 @@ public class Screen extends Application{
 		GridPane gridpane= new GridPane();
 		
 		
-		for (int i=0; i<level.getNbRows(); i++) {
-			for (int j=0; j<level.getNbColumns();j++) {
+		for (int i=0; i<game.getGrid().getNbRows(); i++) {
+			for (int j=0; j<game.getGrid().getNbColumns();j++) {
 				Button button=new Button();
 				button.setPrefSize(100, 100);
 				button.setMinSize(70, 70);
@@ -50,7 +46,7 @@ public class Screen extends Application{
             	
         		
             	
-				switch(this.level.getGrid()[i][j].getType())
+				switch(this.game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
                 {
                 case EmptyCell: 
                 	String buttonText=" ";
@@ -64,7 +60,7 @@ public class Screen extends Application{
                     break;
                     
                 case GameCell: 
-                    buttonText=this.level.getGrid()[i][j].getValue().toString() ;
+                    buttonText=this.game.getGrid().getGrid()[i][j].getValue().toString() ;
                     button.setText(buttonText);
                     break;
                     
@@ -76,7 +72,6 @@ public class Screen extends Application{
 					
 					
         			@Override
-        			
         			public void handle(ActionEvent event) {
         				if(swap==null) {
         					swap=button;
@@ -84,19 +79,15 @@ public class Screen extends Application{
         					column=gridpane.getColumnIndex(button);
         					System.out.println(row +","+column);
         					System.out.println("init");
-        			
-        	                    
-        	                    
-        	                }         					
-        				
-        				else {
         					
+        				}
+        				else {
         					int row2=gridpane.getRowIndex(button);
         					int column2=gridpane.getColumnIndex(button);
-        					if(level.moveCell(level.getGrid()[row2][column2],level.getGrid()[row][column])) {//if moveCell authorized, swap text
+        					if(game.getGrid().moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
         						String tempText=button.getText();
             					button.setText(swap.getText());
-            					((Button)gridpane.getChildren().get(row*level.getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
+            					((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
             					System.out.println("swap");
             					
         					}
@@ -130,8 +121,8 @@ public class Screen extends Application{
 			@Override
 			public void handle(ActionEvent event) {
 				
-				level.stepByStepShuffle();
-				updateGrid(gridpane,level);
+				game.getGrid().stepByStepShuffle();
+				updateGrid(gridpane,game.getGrid());
 			}
 		});
 		
@@ -140,8 +131,8 @@ public class Screen extends Application{
 		randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				level.randomShuffled();
-				updateGrid(gridpane,level);
+				game.getGrid().randomShuffled();
+				updateGrid(gridpane,game.getGrid());
 			}
 		});
 		
@@ -179,7 +170,7 @@ public class Screen extends Application{
     				button.setText(buttonText);
                     break;
                 case GameCell: 
-                    buttonText=this.level.getGrid()[i][j].getValue().toString() ;
+                    buttonText=this.game.getGrid().getGrid()[i][j].getValue().toString() ;
                     button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); // getChildren() returns a list
     				button.setText(buttonText);
                     break;
