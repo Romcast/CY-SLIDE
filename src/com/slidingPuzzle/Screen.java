@@ -72,6 +72,7 @@ public class Screen extends Application{
 					
 					
         			@Override
+        			
         			public void handle(ActionEvent event) {
         				if(swap==null) {
         					swap=button;
@@ -82,6 +83,7 @@ public class Screen extends Application{
         					
         				}
         				else {
+        					
         					int row2=gridpane.getRowIndex(button);
         					int column2=gridpane.getColumnIndex(button);
         					if(level.moveCell(level.getGrid()[row2][column2],level.getGrid()[row][column])) {//if moveCell authorized, swap text
