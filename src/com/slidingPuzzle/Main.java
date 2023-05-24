@@ -272,7 +272,8 @@ public class Main extends Application {
 		public static void playLevel(Stage primaryStage,Game game,int indexPlayer) {
 			GridPane gridpane= new GridPane();
 			//int countMove=0;
-			Label countLabel= new Label("nombre de coups: " + game.getScore());
+			Label countLabel= new Label("Nombre de coups: " + game.getScore());
+			countLabel.setFont(new Font("Berlin Sans FB",30));
 			//displays initial chosen level
 			for (int i=0; i<game.getGrid().getNbRows(); i++) {
 				for (int j=0; j<game.getGrid().getNbColumns();j++) {
@@ -280,7 +281,7 @@ public class Main extends Application {
 					button.setPrefSize(100, 100);
 					button.setMinSize(70, 70);
 					button.setMaxSize(150,150);
-					button.setFont(new Font("Berlin Sans FB",30));
+					button.setFont(new Font("Berlin Sans FB",40));
 	            	gridpane.add(button,j,i);
 	            	
 	            	
@@ -330,7 +331,7 @@ public class Main extends Application {
 	            				System.out.println("swap");
 	            				game.getGrid().print();
 	            				countMove+=1;
-	            				countLabel.setText("nombre de coups: " + game.getScore());
+	            				countLabel.setText("Nombre de coups: " + game.getScore());
 	            				if(game.gameOver()) {
 	            					Alert win = new Alert(AlertType.INFORMATION);
 	            					win.setContentText("BRAVO");
@@ -357,7 +358,8 @@ public class Main extends Application {
 				}
 			}
 
-			Button shuffle=new Button("shuffle");
+			Button shuffle=new Button("Shuffle");
+			shuffle.setFont(new Font("Berlin Sans FB",30));
 			shuffle.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -369,6 +371,7 @@ public class Main extends Application {
 				
 				
 			Button randomShuffle=new Button("Random shuffle");
+			randomShuffle.setFont(new Font("Berlin Sans FB",30));
 			randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -379,6 +382,7 @@ public class Main extends Application {
 			});
 			
 			Button btnBack = new Button("Save and quit");
+			btnBack.setFont(new Font("Berlin Sans FB",30));
 			btnBack.setOnAction(new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent event) {
 					try {
@@ -393,14 +397,30 @@ public class Main extends Application {
 			});
 			
 			HBox shuffleBox=new HBox(shuffle,randomShuffle);
-			Text levelName=new Text("Level "+game.getLevel());
-
-			VBox root=new VBox(levelName,countLabel,gridpane,shuffleBox,btnBack);
-			root.setAlignment(Pos.CENTER);
+			shuffleBox.setSpacing(10);
 			shuffleBox.setAlignment(Pos.CENTER);
+			Text levelName=new Text("Level "+game.getLevel());
+			levelName.setFont(new Font("Berlin Sans FB",80));
 			gridpane.setAlignment(Pos.CENTER);
+			ScrollPane scrollPane = new ScrollPane();
+			scrollPane.setContent(gridpane);
+			scrollPane.setFitToHeight(true);
+			scrollPane.setFitToWidth(true);
+			scrollPane.setMaxSize(600,600);
+			
+			
+			VBox informationBox= new VBox(levelName,countLabel);
+			informationBox.setAlignment(Pos.CENTER);
+			VBox buttonsBox=new VBox(shuffleBox,btnBack);
+			buttonsBox.setAlignment(Pos.CENTER);
+			buttonsBox.setSpacing(10);
+			VBox infoButtonBox = new VBox(informationBox,buttonsBox);
+			infoButtonBox.setSpacing(50);
+			infoButtonBox.setAlignment(Pos.CENTER);
+			HBox root = new HBox(scrollPane,infoButtonBox);
+			root.setAlignment(Pos.CENTER);
 			root.setPadding(new Insets(20));
-			root.setSpacing(10);	
+			root.setSpacing(100);	
 			Scene scene=new Scene(root,screenBounds.getWidth(), screenBounds.getHeight()-25);
 			primaryStage.setScene(scene);
 			
