@@ -1,7 +1,9 @@
 import java.io.File;
+import java.io.Serializable;
 
-public class Game {
-
+public class Game implements Serializable {
+	private static final long serialVersionUID = 2;
+	private Player player;
     private int nbStrokes;
     private int scoreMin;
     private int score;
@@ -10,7 +12,7 @@ public class Game {
     private ShuffleType type;
     private Grid grid;
 
-    public Game(int nbLevel, ShuffleType type) {
+    public Game(int nbLevel, ShuffleType type,Player player) {
         try {
             if (nbLevel >= 1 && nbLevel <= 10) {
                 String filePath = "./data/levels/level_" + nbLevel + ".csv";
@@ -19,6 +21,7 @@ public class Game {
                 this.level = nbLevel;
                 this.nbStrokes = 0;
                 this.score = 0;
+                this.player=player;
 
                 switch (type) {
                     case StepByStep:
@@ -46,7 +49,7 @@ public class Game {
         }
     }
     
-    public Game(int nbLevel) {
+    public Game(int nbLevel,Player player) {
         try {
             if (nbLevel >= 1 && nbLevel <= 10) {
                 String filePath = "./data/levels/level_" + nbLevel + ".csv";
@@ -55,6 +58,7 @@ public class Game {
                 this.level = nbLevel;
                 this.nbStrokes = 0;
                 this.score = 0;
+                this.player = player;
 
 
             } else {
@@ -70,6 +74,30 @@ public class Game {
     }
     public boolean getIsSolvable() {
     	return this.isSolvable;
+    }
+    
+    public int getLevel() {
+    	return this.level;
+    }
+    
+    public int getScore() {
+    	return this.score;
+    }
+    
+    public boolean moveCell(Cell C1, Cell C2) {
+    	if (this.grid.moveCell(C1, C2)) {
+    		this.score++;
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public boolean gameOver() {
+    	if (this.grid.gameOver()) {
+    		this.player.incLevelMax();
+    		return true;
+    	}
+    	return false;
     }
 
     public void print() {

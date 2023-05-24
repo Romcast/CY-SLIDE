@@ -1,5 +1,7 @@
-public class Cell{
+import java.io.Serializable;
 
+public class Cell implements Serializable{
+private static final long serialVersionUID = 4;
 private int row;
 private int column;
 private Integer value;
@@ -30,7 +32,7 @@ public void setValue(Integer value)
 
     if(this.type == CellType.GameCell) 
     {this.value=value;}
-    else {value=null;}
+    else {this.value=null;}
 }
 public void setRow(int row){this.row=row;}
 public void setColumn(int column){this.column=column;}

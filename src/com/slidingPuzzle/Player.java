@@ -4,11 +4,10 @@ import java.io.*;
 
 public class Player implements Serializable
 {
-
+private static final long serialVersionUID = 1;
 private String pseudo;
 private int levelMax;
-private Game[] gameArray;  // curentGame, if player want continue after
- 
+private Game[] gameArray;  // curentGame, if player want continue after 
 //listescore
 public Player(String pseudo){
     this.pseudo=pseudo;
@@ -19,6 +18,9 @@ public Player(String pseudo){
 }
 
 public int getLevelMax() {return this.levelMax;}
+public void incLevelMax() {
+	this.levelMax++;
+}
 public String getPseudo() {return this.pseudo;}
 public Game[] getGameArray() {return this.gameArray;}
 
@@ -70,7 +72,7 @@ public void Play()
             }
 }
    
-    Game game = new Game(choice,type);
+    Game game = new Game(choice,type,this);
     //System.out.println(game.getIsSolvable());
 
 while (!game.getGrid().gameOver()) {

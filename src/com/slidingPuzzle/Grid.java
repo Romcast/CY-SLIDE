@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class Grid{
+public class Grid implements Serializable{
+	
+private static final long serialVersionUID = 3;
 
 public static final int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
