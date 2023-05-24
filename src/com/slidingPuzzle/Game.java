@@ -6,17 +6,13 @@ public class Game implements Serializable {
 	private Player player;
     private int nbStrokes;
     private int scoreMin;
-    private int score;
+    private int score; 
     private int level;
     private boolean isSolvable;
     private ShuffleType type;
     private Grid grid;
 
-<<<<<<< HEAD
-    public Game(int nbLevel) {
-=======
     public Game(int nbLevel, ShuffleType type,Player player) {
->>>>>>> 131211ac8e90c725a86e36f1c8fa81ec32fafdda
         try {
             if (nbLevel >= 1 && nbLevel <= 10) {
                 String filePath = "./data/levels/level_" + nbLevel + ".csv";
@@ -25,21 +21,8 @@ public class Game implements Serializable {
                 this.level = nbLevel;
                 this.nbStrokes = 0;
                 this.score = 0;
-<<<<<<< HEAD
-                
-            } else {
-                System.out.println("Niveau invalide !");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-                
-public void setType(ShuffleType Type) {
-=======
                 this.player=player;
 
->>>>>>> 131211ac8e90c725a86e36f1c8fa81ec32fafdda
                 switch (type) {
                     case StepByStep:
                         this.grid.stepByStepShuffle();
@@ -48,7 +31,8 @@ public void setType(ShuffleType Type) {
                     case Random:
                     	
                         this.grid.randomShuffled();
-                        this.isSolvable = this.grid.isSolvable();
+                        
+                        this.isSolvable = this.grid.isSolvable();//A changer
                         break;
 
                     default:
@@ -56,11 +40,7 @@ public void setType(ShuffleType Type) {
                         this.isSolvable = true;
                         break;
                 }
-}
 
-
-<<<<<<< HEAD
-=======
             } else {
                 System.out.println("Niveau invalide !");
             }
@@ -88,8 +68,15 @@ public void setType(ShuffleType Type) {
             System.out.println(e.getMessage());
         }
     }
->>>>>>> 131211ac8e90c725a86e36f1c8fa81ec32fafdda
-
+    
+    public void setIsSolvable(boolean solvable) {
+    	this.isSolvable=solvable;
+    }
+    
+    public void setType(ShuffleType type) {
+    	this.type=type;
+    }
+    
     public Grid getGrid() {
         return this.grid;
     }
@@ -124,13 +111,5 @@ public void setType(ShuffleType Type) {
     public void print() {
         this.grid.print();
     }
-public boolean moveCell(Cell C1, Cell C2) {
-	
-	if(this.grid.moveCell(C1,C2)) {
-		this.score++;
-		return true;
-	}
-	return false;
-	
-}
+
 }
