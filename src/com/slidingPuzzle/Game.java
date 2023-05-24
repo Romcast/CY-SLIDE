@@ -10,7 +10,7 @@ public class Game {
     private ShuffleType type;
     private Grid grid;
 
-    public Game(int nbLevel, ShuffleType type) {
+    public Game(int nbLevel) {
         try {
             if (nbLevel >= 1 && nbLevel <= 10) {
                 String filePath = "./data/levels/level_" + nbLevel + ".csv";
@@ -19,7 +19,16 @@ public class Game {
                 this.level = nbLevel;
                 this.nbStrokes = 0;
                 this.score = 0;
-
+                
+            } else {
+                System.out.println("Niveau invalide !");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+                
+public void setType(ShuffleType Type) {
                 switch (type) {
                     case StepByStep:
                         this.grid.stepByStepShuffle();
@@ -28,8 +37,7 @@ public class Game {
                     case Random:
                     	
                         this.grid.randomShuffled();
-                        
-                        this.isSolvable = this.grid.isSolvable();//A changer
+                        this.isSolvable = this.grid.isSolvable();
                         break;
 
                     default:
@@ -37,14 +45,9 @@ public class Game {
                         this.isSolvable = true;
                         break;
                 }
+}
 
-            } else {
-                System.out.println("Niveau invalide !");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+
 
     public Grid getGrid() {
         return this.grid;
@@ -56,5 +59,13 @@ public class Game {
     public void print() {
         this.grid.print();
     }
-
+public boolean moveCell(Cell C1, Cell C2) {
+	
+	if(this.grid.moveCell(C1,C2)) {
+		this.score++;
+		return true;
+	}
+	return false;
+	
+}
 }
