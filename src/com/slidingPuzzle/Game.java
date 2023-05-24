@@ -45,6 +45,25 @@ public class Game {
             System.out.println(e.getMessage());
         }
     }
+    
+    public Game(int nbLevel) {
+        try {
+            if (nbLevel >= 1 && nbLevel <= 10) {
+                String filePath = "./data/levels/level_" + nbLevel + ".csv";
+                File fileLevel = new File(filePath);
+                this.grid = new Grid(fileLevel);
+                this.level = nbLevel;
+                this.nbStrokes = 0;
+                this.score = 0;
+
+
+            } else {
+                System.out.println("Niveau invalide !");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     public Grid getGrid() {
         return this.grid;
