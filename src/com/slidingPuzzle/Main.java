@@ -414,8 +414,8 @@ public class Main extends Application {
 			scrollPane.setFitToWidth(true);
 			scrollPane.setMaxSize(600,600);
 			
-			//GridPane goalGridpane=createGoal(primaryStage,100,playerArray[indexPlayer].getGameArray()[j]);
-			//goalGridpane.setAlignment(Pos.TOP_RIGHT);
+			GridPane goalGridpane=createGoal(primaryStage,100,game);
+			goalGridpane.setAlignment(Pos.CENTER);
 			VBox informationBox= new VBox(levelName,countLabel);
 			informationBox.setAlignment(Pos.CENTER);
 			VBox buttonsBox=new VBox(shuffleBox,btnBack);
@@ -424,7 +424,7 @@ public class Main extends Application {
 			VBox infoButtonBox = new VBox(informationBox,buttonsBox);
 			infoButtonBox.setSpacing(50);
 			infoButtonBox.setAlignment(Pos.CENTER);
-			HBox root = new HBox(scrollPane,infoButtonBox);
+			HBox root = new HBox(scrollPane,infoButtonBox,goalGridpane);
 			root.setAlignment(Pos.CENTER);
 			root.setPadding(new Insets(20));
 			root.setSpacing(100);	
@@ -443,7 +443,7 @@ public class Main extends Application {
 					cellLabel.setMinSize(50, 50);
 					cellLabel.setMaxSize(150,150);
 					cellLabel.setFont(new Font("Berlin Sans FB",30));
-					//cellLabel.setStyle("-fx-border-color: black");
+					cellLabel.setStyle("-fx-border-color: black");
 					cellLabel.setAlignment(Pos.CENTER);
 	            	goalGridpane.add(cellLabel,j,i);
 	            	
