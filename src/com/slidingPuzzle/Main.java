@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.event.*;
 import javafx.scene.text.*;
 import javafx.geometry.Insets;
@@ -29,16 +30,12 @@ public class Main extends Application {
 	static Player[] playerArray= new Player[5];
 	static int j;
 	static final Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-	
-	static File fileLevel = new File("./data/levels/level_1.csv");
-    static Grid level = new Grid(fileLevel);
-	/*String fileName = "../levels/level_1.csv";
-    File fileLevel = new File(fileName);
-    Grid level = new Grid(fileLevel);*/
-    static Button swap=null;
+	 
+	static Button swap=null;
     static int row;
 	static int column;
-	 
+	static int countMove=0;
+	
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
 		try {
@@ -132,12 +129,12 @@ public class Main extends Application {
 			  // int i;
 			   for(i=0;i<5;i++) {
 				   if(playerArray[i]==null) {
-					   final int index = i;
+					   final int indexPlayer = i;
 					   Hyperlink tmp=new Hyperlink("New Player");
 					   tmp.setOnAction(new EventHandler<ActionEvent>(){
 						   public void handle(ActionEvent t){
 							   
-							   createPlayer(primaryStage,index);
+							   createPlayer(primaryStage,indexPlayer);
 						   }
 					   });
 					   HBox hBoxPlayerRemove = new HBox();
@@ -146,11 +143,11 @@ public class Main extends Application {
 					   hBoxPlayerRemove.setAlignment(Pos.CENTER);
 					   hBoxHashMap.put(i, hBoxPlayerRemove);
 				   }else {
-					   final int index = i;
+					   final int indexPlayer = i;
 					   Hyperlink tmp=new Hyperlink(playerArray[i].getPseudo());
 					   tmp.setOnAction(new EventHandler<ActionEvent>(){
 						   public void handle(ActionEvent t){
-							   chooseLevel(primaryStage,index);
+							   chooseLevel(primaryStage,indexPlayer);
 						   }
 					   });
 					   HBox hBoxPlayerRemove = new HBox();
@@ -158,7 +155,7 @@ public class Main extends Application {
 					   Button btnRemove = new Button("Remove");
 					   btnRemove.setOnAction(new EventHandler<ActionEvent>(){
 						   public void handle(ActionEvent t){
-							   removePlayer(primaryStage,index);
+							   removePlayer(primaryStage,indexPlayer);
 						   }
 					   });
 					   btnRemove.setFont(new Font("Berlin Sans FB",30));
@@ -176,7 +173,7 @@ public class Main extends Application {
 			
 		}
 		
-		public static void createPlayer(Stage primaryStage,int index) {
+		public static void createPlayer(Stage primaryStage,int indexPlayer) {
 			BorderPane newrootPlayer1 =new BorderPane();
 			VBox vboxP1=new VBox();
 			Label pseudonyme1= new Label("New pseudo");
@@ -185,14 +182,14 @@ public class Main extends Application {
 		    btnpseudo1.setOnAction(new EventHandler<ActionEvent>(){
 		    	public void handle(ActionEvent t) {
 		    		String pseudoEntered = choosePseudo.getText();
-					playerArray[index]=new Player(pseudoEntered);
+					playerArray[indexPlayer]=new Player(pseudoEntered);
 				    try {
 					writePlayerFile(playerArray);
 				    } catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();		
 					}
-				    chooseLevel(primaryStage,index);
+				    chooseLevel(primaryStage,indexPlayer);
 		    	}
 		    });
 		    Button btnback=new Button("Go back to the selection");
@@ -211,8 +208,8 @@ public class Main extends Application {
 		   	primaryStage.setScene(new Scene(newrootPlayer1,screenBounds.getWidth(), screenBounds.getHeight()-25));
 		}
 		
-		public static void removePlayer(Stage primaryStage,int index) {
-			playerArray[index]=null;
+		public static void removePlayer(Stage primaryStage,int indexPlayer) {
+			playerArray[indexPlayer]=null;
 		    try {
 			writePlayerFile(playerArray);
 		    } catch (ClassNotFoundException | IOException e) {
@@ -222,47 +219,73 @@ public class Main extends Application {
 		    choosePlayer(primaryStage);
 		}
 		
-		public static void chooseLevel(Stage primaryStage, int index) {
+		public static void chooseLevel(Stage primaryStage, int indexPlayer) {
 			BorderPane newrootPlayer2 =new BorderPane();
-            int maxLevel=playerArray[index].getLevelMax();
+            int maxLevel=playerArray[indexPlayer].getLevelMax();
             VBox description=new VBox();
-			VBox[] vboxP2=new VBox[maxLevel];
+			VBox vboxP2=new VBox();
 			Label Level= new Label("Level  Score Shuffle  ShuffleRandom ");
 			Level.setFont(new Font("Berlin Sans FB",40));
             description.getChildren().add(Level);
             description.setAlignment(Pos.CENTER);
             newrootPlayer2.setTop(description);
             for(j=0;j<maxLevel;j++){
-            	vboxP2[j] = new VBox();
+            	final int indexLevel = j;
+            	HBox hboxP2 = new HBox();
                 Hyperlink Levelj= new Hyperlink("Level"+(j+1));
                 Levelj.setFont(new Font("Berlin Sans FB",40));
                 //Label scoreShuffle= new Label("Score Shuffle");
                 //Label scoreRandomShuffle=new Label("Score ShuffleRandom");
     		    Levelj.setOnAction(new EventHandler<ActionEvent>(){
     		    	public void handle(ActionEvent t) {
-    		    		playLevel(primaryStage);
+    		    		if (playerArray[indexPlayer].getGameArray()[indexLevel] == null){
+    		    			playerArray[indexPlayer].getGameArray()[indexLevel] = new Game(j,playerArray[indexPlayer]);
+    		    		}
+    		    		playLevel(primaryStage,playerArray[indexPlayer].getGameArray()[indexLevel],indexPlayer);
     		    	}
     		    });
-               	vboxP2[j].getChildren().add(Levelj);
-              	vboxP2[j].setAlignment(Pos.CENTER);
-                newrootPlayer2.setCenter(vboxP2[j]);
+    		    Label score = new Label();
+    		    score.setFont(new Font("Berlin Sans FB",40));
+    		    if (playerArray[indexPlayer].getGameArray()[indexLevel] == null) {
+    		    	score.setText("Not played yet");
+    		    }
+    		    else {
+    		    	score.setText(Integer.toString(playerArray[indexPlayer].getGameArray()[j].getScore()));
+    		    	
+    		    }
+    		    hboxP2.getChildren().addAll(Levelj,score);
+    		    hboxP2.setAlignment(Pos.CENTER);
+               	vboxP2.getChildren().add(hboxP2);
             }
+            vboxP2.setAlignment(Pos.CENTER);
+            Button btnBack = new Button("Go back to selection");
+			btnBack.setOnAction(new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent event) {
+					choosePlayer(primaryStage);
+				}
+				
+			});
+			description.getChildren().add(btnBack);
+			newrootPlayer2.setCenter(vboxP2);
 			primaryStage.setScene(new Scene(newrootPlayer2,screenBounds.getWidth(), screenBounds.getHeight()-25));
 		}
-		public static void playLevel(Stage primaryStage) {
-			primaryStage.setTitle("CY SLIDE");
+		public static void playLevel(Stage primaryStage,Game game,int indexPlayer) {
 			GridPane gridpane= new GridPane();
-			
-			for (int i=0; i<level.getNbRows(); i++) {
-				for (int j=0; j<level.getNbColumns();j++) {
+			//int countMove=0;
+			Label countLabel= new Label("Nombre de coups: " + game.getScore());
+			countLabel.setFont(new Font("Berlin Sans FB",30));
+			//displays initial chosen level
+			for (int i=0; i<game.getGrid().getNbRows(); i++) {
+				for (int j=0; j<game.getGrid().getNbColumns();j++) {
 					Button button=new Button();
 					button.setPrefSize(100, 100);
 					button.setMinSize(70, 70);
 					button.setMaxSize(150,150);
-					button.setFont(new Font("Berlin Sans FB",30));
+					button.setFont(new Font("Berlin Sans FB",40));
 	            	gridpane.add(button,j,i);
 	            	
-					switch(level.getGrid()[i][j].getType())
+	            	
+					switch(game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
 	                {
 	                case EmptyCell: 
 	                	String buttonText=" ";
@@ -276,89 +299,133 @@ public class Main extends Application {
 	                    break;
 	                    
 	                case GameCell: 
-	                    buttonText=level.getGrid()[i][j].getValue().toString() ;
+	                    buttonText=game.getGrid().getGrid()[i][j].getValue().toString() ;
 	                    button.setText(buttonText);
 	                    break;
 	                    
 	                default:
 	                    break;
 	                }
-			
+					
+					//button of grid, click on two of them to swap them
 					button.setOnAction(new EventHandler<ActionEvent>(){
-	        			public void handle(ActionEvent event) {
-	        				if(swap==null) {
-	        					swap=button;
-	        					row=gridpane.getRowIndex(button);
-	        					column=gridpane.getColumnIndex(button);
-	        					System.out.println(row +","+column);
-	        					System.out.println("init");
-	        				}
-	        				else {
-	        					int row2=gridpane.getRowIndex(button);
-	        					int column2=gridpane.getColumnIndex(button);
-	        					if(level.moveCell(level.getGrid()[row2][column2],level.getGrid()[row][column])) {//if moveCell authorized, swap text
-	        						String tempText=button.getText();
-	            					button.setText(swap.getText());
-	            					((Button)gridpane.getChildren().get(row*level.getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
-	            					System.out.println("swap");
-	            					
-	        					}
-	        					/*else {  //if unauthorized movement, buttons get red for a moment
-	        						button.setStyle("-fx-background-color: red;");
-	        						((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("-fx-background-color: red;");
-	        						try{
-	        							Thread.sleep(1000);	
-	        						}
-	        						catch(Exception e) {
-	        							e.printStackTrace();
-	        						}
-	    							button.setStyle("");
-	        						((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("");
-
-	        						
-	        					}*/
-	        					swap=null;
-	        				}
+						
+						
+	        		@Override
+	        		public void handle(ActionEvent event) {
+	        			if(swap==null) {// register first button as source
+	        				swap=button;
+	        				row=gridpane.getRowIndex(button);
+	        				column=gridpane.getColumnIndex(button);
+	        				System.out.println(row +","+column);
+	        				System.out.println("init");
+	        				
 	        			}
-	        			
-	        		});
+	        			else { // register 2nd one as target
+	        				int row2=gridpane.getRowIndex(button);
+	        				int column2=gridpane.getColumnIndex(button);
+	        				if(game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
+	        					String tempText=button.getText();
+	            				button.setText(swap.getText());
+	            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
+	            				System.out.println("swap");
+	            				game.getGrid().print();
+	            				countMove+=1;
+	            				countLabel.setText("Nombre de coups: " + game.getScore());
+	            				if(game.gameOver()) {
+	            					Alert win = new Alert(AlertType.INFORMATION);
+	            					win.setContentText("BRAVO");
+	            					win.showAndWait();
+	            				}	
+	        				}
+	        				/*else {  //if unauthorized movement, buttons get red for a moment
+	        					button.setStyle("-fx-background-color: red;");
+	        					((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("-fx-background-color: red;");
+	        					try{
+	        						Thread.sleep(1000);	
+	        					}
+	        					catch(Exception e) {
+	        						e.printStackTrace();
+	        					}
+	    						button.setStyle("");
+	        					((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("");		
+	       					}*/
+	        				swap=null;
+	        				}
+	        			}		
+					});
 		
 				}
 			}
-			
-			
-			
-			Button shuffle=new Button("shuffle");
+
+			Button shuffle=new Button("Shuffle");
+			shuffle.setFont(new Font("Berlin Sans FB",30));
 			shuffle.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
 				public void handle(ActionEvent event) {
 					
-					level.stepByStepShuffle();
-					updateGrid(gridpane,level);
+					game.getGrid().stepByStepShuffle();
+					updateGrid(gridpane,game.getGrid());
+				}
+			});
+				
+				
+			Button randomShuffle=new Button("Random shuffle");
+			randomShuffle.setFont(new Font("Berlin Sans FB",30));
+			randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					game.getGrid().randomShuffled();
+					updateGrid(gridpane,game.getGrid());
+					//ajouter une condition pour verifier solvalble
 				}
 			});
 			
-			
-			Button randomShuffle=new Button("Random shuffle");
-			randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
+			Button btnBack = new Button("Save and quit");
+			btnBack.setFont(new Font("Berlin Sans FB",30));
+			btnBack.setOnAction(new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent event) {
-					level.randomShuffled();
-					updateGrid(gridpane,level);
+					try {
+						writePlayerFile(playerArray);
+					    } catch (ClassNotFoundException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();		
+						}
+					chooseLevel(primaryStage,indexPlayer);
 				}
+				
 			});
 			
 			HBox shuffleBox=new HBox(shuffle,randomShuffle);
-			Text levelName=new Text("Level");
-			//levelName.
-			VBox root=new VBox(levelName,gridpane,shuffleBox);
-			root.setAlignment(Pos.CENTER);
+			shuffleBox.setSpacing(10);
 			shuffleBox.setAlignment(Pos.CENTER);
+			Text levelName=new Text("Level "+game.getLevel());
+			levelName.setFont(new Font("Berlin Sans FB",80));
 			gridpane.setAlignment(Pos.CENTER);
+			ScrollPane scrollPane = new ScrollPane();
+			scrollPane.setContent(gridpane);
+			scrollPane.setFitToHeight(true);
+			scrollPane.setFitToWidth(true);
+			scrollPane.setMaxSize(600,600);
+			
+			
+			VBox informationBox= new VBox(levelName,countLabel);
+			informationBox.setAlignment(Pos.CENTER);
+			VBox buttonsBox=new VBox(shuffleBox,btnBack);
+			buttonsBox.setAlignment(Pos.CENTER);
+			buttonsBox.setSpacing(10);
+			VBox infoButtonBox = new VBox(informationBox,buttonsBox);
+			infoButtonBox.setSpacing(50);
+			infoButtonBox.setAlignment(Pos.CENTER);
+			HBox root = new HBox(scrollPane,infoButtonBox);
+			root.setAlignment(Pos.CENTER);
 			root.setPadding(new Insets(20));
-			root.setSpacing(10);
+			root.setSpacing(100);	
 			Scene scene=new Scene(root,screenBounds.getWidth(), screenBounds.getHeight()-25);
 			primaryStage.setScene(scene);
+			
 		}
-		
+		 
 		public static void updateGrid(GridPane gridpane, Grid grid) {
 			for (int i=0; i<grid.getNbRows(); i++) {
 				for (int j=0; j<grid.getNbColumns();j++) {
@@ -372,22 +439,21 @@ public class Main extends Application {
 	                    break;
 	                case UnexistantCell: 
 	                	buttonText="";
-	                	button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); // getChildren() returns a list
+	                	button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); 
 	    				button.setText(buttonText);
 	                    break;
 	                case GameCell: 
-	                    buttonText=level.getGrid()[i][j].getValue().toString() ;
-	                    button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); // getChildren() returns a list
+	                    buttonText=grid.getGrid()[i][j].getValue().toString() ;
+	                    button = (Button) gridpane.getChildren().get(i*grid.getNbColumns()+j); 
 	    				button.setText(buttonText);
 	                    break;
 	                default:
 	                    break;
 	                }
-					
+
 				}
 			}
 		}
-		
 
 	
 	public static void main(String[] args) {

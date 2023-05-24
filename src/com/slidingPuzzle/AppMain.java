@@ -11,8 +11,6 @@ public class AppMain {
     */
 
     public static void main(String[] args) {
-    	
-    	
        
         Player Abdellah = new Player("Zeleo789");
         Abdellah.Play();

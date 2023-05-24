@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class Grid{
+public class Grid implements Serializable{
+	
+private static final long serialVersionUID = 3;
 
 public static final int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
@@ -227,7 +229,7 @@ public void stepByStepShuffle()
         int nbEmptyCells,randomEmptyCells,randomMove,iEmpty,jEmpty,iNext,jNext;
         ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
         int l = 0;
-		while (!this.wellShuffled() && l<100) {
+		while (!(this.wellShuffled() && l>100)) {
             
 			l++;
             listOfEmptyCells = this.listOfEmptyCells();
