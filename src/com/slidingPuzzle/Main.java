@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.*;
 import java.util.HashMap;
+
 public class Main extends Application {
 	//static Scene players = null;
 	//static Scene creation = null;
@@ -126,8 +127,7 @@ public class Main extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			   HashMap<Integer, Hyperlink> pseudo = new HashMap<Integer, Hyperlink>();
-
+			   HashMap<Integer, HBox> hBoxHashMap = new HashMap<Integer, HBox>();
 			   
 			  // int i;
 			   for(i=0;i<5;i++) {
@@ -140,8 +140,11 @@ public class Main extends Application {
 							   createPlayer(primaryStage,index);
 						   }
 					   });
+					   HBox hBoxPlayerRemove = new HBox();
+					   hBoxPlayerRemove.getChildren().addAll(tmp);
 					   tmp.setFont(new Font("Berlin Sans FB",80));
-					   pseudo.put(i, tmp);
+					   hBoxPlayerRemove.setAlignment(Pos.CENTER);
+					   hBoxHashMap.put(i, hBoxPlayerRemove);
 				   }else {
 					   final int index = i;
 					   Hyperlink tmp=new Hyperlink(playerArray[i].getPseudo());
@@ -150,12 +153,23 @@ public class Main extends Application {
 							   chooseLevel(primaryStage,index);
 						   }
 					   });
+					   HBox hBoxPlayerRemove = new HBox();
+					   hBoxPlayerRemove.setSpacing(25);
+					   Button btnRemove = new Button("Remove");
+					   btnRemove.setOnAction(new EventHandler<ActionEvent>(){
+						   public void handle(ActionEvent t){
+							   removePlayer(primaryStage,index);
+						   }
+					   });
+					   btnRemove.setFont(new Font("Berlin Sans FB",30));
 					   tmp.setFont(new Font("Berlin Sans FB",80));
-					   pseudo.put(i, tmp); 
+					   hBoxPlayerRemove.getChildren().addAll(tmp,btnRemove);
+					   hBoxPlayerRemove.setAlignment(Pos.CENTER);
+					   hBoxHashMap.put(i, hBoxPlayerRemove); 
 				   }
 				   
 			   }
-			   vboxPlayer1.getChildren().addAll(labelPlayer1,pseudo.get(0),pseudo.get(1),pseudo.get(2),pseudo.get(3),pseudo.get(4));
+			   vboxPlayer1.getChildren().addAll(labelPlayer1,hBoxHashMap.get(0),hBoxHashMap.get(1),hBoxHashMap.get(2),hBoxHashMap.get(3),hBoxHashMap.get(4));
 			   vboxPlayer1.setAlignment(Pos.CENTER);
 			   newroot.setTop(vboxPlayer1);
 		     primaryStage.setScene(new Scene(newroot,screenBounds.getWidth(), screenBounds.getHeight()-25));
@@ -195,6 +209,17 @@ public class Main extends Application {
 		   	vboxP1.setAlignment(Pos.CENTER);
 		   	newrootPlayer1.setCenter(vboxP1);
 		   	primaryStage.setScene(new Scene(newrootPlayer1,screenBounds.getWidth(), screenBounds.getHeight()-25));
+		}
+		
+		public static void removePlayer(Stage primaryStage,int index) {
+			playerArray[index]=null;
+		    try {
+			writePlayerFile(playerArray);
+		    } catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();		
+			}
+		    choosePlayer(primaryStage);
 		}
 		
 		public static void chooseLevel(Stage primaryStage, int index) {
