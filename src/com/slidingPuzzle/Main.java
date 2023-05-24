@@ -365,7 +365,10 @@ public class Main extends Application {
 				public void handle(ActionEvent event) {
 					
 					game.getGrid().stepByStepShuffle();
+					game.setType(ShuffleType.StepByStep);
+					game.setIsSolvable(true);
 					updateGrid(gridpane,game.getGrid());
+					
 				}
 			});
 				
@@ -376,8 +379,10 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					game.getGrid().randomShuffled();
+					game.setType(ShuffleType.Random);
 					updateGrid(gridpane,game.getGrid());
 					//ajouter une condition pour verifier solvalble
+					
 				}
 			});
 			
@@ -399,6 +404,7 @@ public class Main extends Application {
 			HBox shuffleBox=new HBox(shuffle,randomShuffle);
 			shuffleBox.setSpacing(10);
 			shuffleBox.setAlignment(Pos.CENTER);
+			
 			Text levelName=new Text("Level "+game.getLevel());
 			levelName.setFont(new Font("Berlin Sans FB",80));
 			gridpane.setAlignment(Pos.CENTER);
@@ -408,7 +414,8 @@ public class Main extends Application {
 			scrollPane.setFitToWidth(true);
 			scrollPane.setMaxSize(600,600);
 			
-			
+			//GridPane goalGridpane=createGoal(primaryStage,100,playerArray[indexPlayer].getGameArray()[j]);
+			//goalGridpane.setAlignment(Pos.TOP_RIGHT);
 			VBox informationBox= new VBox(levelName,countLabel);
 			informationBox.setAlignment(Pos.CENTER);
 			VBox buttonsBox=new VBox(shuffleBox,btnBack);
@@ -424,6 +431,48 @@ public class Main extends Application {
 			Scene scene=new Scene(root,screenBounds.getWidth(), screenBounds.getHeight()-25);
 			primaryStage.setScene(scene);
 			
+		}
+		
+		public static GridPane createGoal(Stage primaryStage,int prefSize, Game game) {
+			GridPane goalGridpane=new GridPane();
+			
+			for (int i=0; i<game.getGrid().getNbRows(); i++) {
+				for (int j=0; j<game.getGrid().getNbColumns();j++) {
+					Label cellLabel=new Label();
+					cellLabel.setPrefSize(prefSize, prefSize);
+					cellLabel.setMinSize(50, 50);
+					cellLabel.setMaxSize(150,150);
+					cellLabel.setFont(new Font("Berlin Sans FB",30));
+					//cellLabel.setStyle("-fx-border-color: black");
+					cellLabel.setAlignment(Pos.CENTER);
+	            	goalGridpane.add(cellLabel,j,i);
+	            	
+	            	
+	            	
+					switch(game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
+	                {
+	                case EmptyCell: 
+	                	String cellText=" ";
+	                	cellLabel.setText(cellText);
+	                    break;
+	                    
+	                case UnexistantCell: 
+	                	cellText="";
+	                	cellLabel.setText(cellText);
+	                	cellLabel.setStyle("-fx-background-color: grey;");
+	                    break;
+	                    
+	                case GameCell: 
+	                    cellText=game.getGrid().getGrid()[i][j].getValue().toString() ;
+	                    cellLabel.setText(cellText);
+	                    break;
+	                    
+	                default:
+	                    break;
+	                }
+				}
+			}
+			return goalGridpane;
 		}
 		 
 		public static void updateGrid(GridPane gridpane, Grid grid) {
@@ -460,4 +509,3 @@ public class Main extends Application {
 		launch(args);
 	}
 }
-
