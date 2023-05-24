@@ -229,7 +229,7 @@ public void stepByStepShuffle()
         int nbEmptyCells,randomEmptyCells,randomMove,iEmpty,jEmpty,iNext,jNext;
         ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
         int l = 0;
-		while (!this.wellShuffled() && l<100) {
+		while (!(this.wellShuffled() && l>100)) {
             
 			l++;
             listOfEmptyCells = this.listOfEmptyCells();
