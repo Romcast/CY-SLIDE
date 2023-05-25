@@ -34,7 +34,6 @@ public class Main extends Application {
 	static Button swap=null;
     static int row;
 	static int column;
-	static int countMove=0;
 	
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
@@ -75,6 +74,7 @@ public class Main extends Application {
 	}
 		
 		public static void intro(Stage primaryStage) {
+			primaryStage.setTitle("CY SLIDE");
 			BorderPane root = new BorderPane();
 			
 			VBox vbox1=new VBox();
@@ -232,29 +232,30 @@ public class Main extends Application {
             for(j=0;j<maxLevel;j++){
             	final int indexLevel = j;
             	HBox hboxP2 = new HBox();
-                Hyperlink Levelj= new Hyperlink("Level"+(j+1));
+                Hyperlink Levelj= new Hyperlink("Level"+(indexLevel+1));
                 Levelj.setFont(new Font("Berlin Sans FB",40));
                 //Label scoreShuffle= new Label("Score Shuffle");
                 //Label scoreRandomShuffle=new Label("Score ShuffleRandom");
     		    Levelj.setOnAction(new EventHandler<ActionEvent>(){
     		    	public void handle(ActionEvent t) {
     		    		if (playerArray[indexPlayer].getGameArray()[indexLevel] == null){
-    		    			playerArray[indexPlayer].getGameArray()[indexLevel] = new Game(j,playerArray[indexPlayer]);
+    		    			playerArray[indexPlayer].getGameArray()[indexLevel] = new Game(indexLevel+1,playerArray[indexPlayer]);
     		    		}
-    		    		playLevel(primaryStage,playerArray[indexPlayer].getGameArray()[indexLevel],indexPlayer);
+    		    		playLevel(primaryStage,indexLevel,indexPlayer);
     		    	}
     		    });
-    		    Label score = new Label();
-    		    score.setFont(new Font("Berlin Sans FB",40));
-    		    if (playerArray[indexPlayer].getGameArray()[indexLevel] == null) {
-    		    	score.setText("Not played yet");
+    		    
+    		    Label bestScore = new Label();
+    		    bestScore.setFont(new Font("Berlin Sans FB",40));
+    		    if (playerArray[indexPlayer].getBestScores()[indexLevel] == null) {
+    		    	bestScore.setText("Not finished yet");
     		    }
     		    else {
-    		    	score.setText(Integer.toString(playerArray[indexPlayer].getGameArray()[j].getScore()));
-    		    	
+    		    	bestScore.setText(Integer.toString(playerArray[indexPlayer].getBestScores()[indexLevel]));
     		    }
-    		    hboxP2.getChildren().addAll(Levelj,score);
+    		    hboxP2.getChildren().addAll(Levelj,bestScore);
     		    hboxP2.setAlignment(Pos.CENTER);
+    		    hboxP2.setSpacing(20);
                	vboxP2.getChildren().add(hboxP2);
             }
             vboxP2.setAlignment(Pos.CENTER);
@@ -269,9 +270,10 @@ public class Main extends Application {
 			newrootPlayer2.setCenter(vboxP2);
 			primaryStage.setScene(new Scene(newrootPlayer2,screenBounds.getWidth(), screenBounds.getHeight()-25));
 		}
-		public static void playLevel(Stage primaryStage,Game game,int indexPlayer) {
+		public static void playLevel(Stage primaryStage,int indexLevel,int indexPlayer) {
+			Game game = playerArray[indexPlayer].getGameArray()[indexLevel];
+			Integer bScore = playerArray[indexPlayer].getBestScores()[indexLevel];
 			GridPane gridpane= new GridPane();
-			//int countMove=0;
 			Label countLabel= new Label("Nombre de coups: " + game.getScore());
 			countLabel.setFont(new Font("Berlin Sans FB",30));
 			//displays initial chosen level
@@ -330,12 +332,23 @@ public class Main extends Application {
 	            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
 	            				System.out.println("swap");
 	            				game.getGrid().print();
-	            				countMove+=1;
 	            				countLabel.setText("Nombre de coups: " + game.getScore());
 	            				if(game.gameOver()) {
+	            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
+	            					if (bScore == null || game.getScore() < bScore) {
+	            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
+	            					}
+	            					try {
+	            						writePlayerFile(playerArray);
+	            					    } catch (ClassNotFoundException | IOException e) {
+	            						// TODO Auto-generated catch block
+	            						e.printStackTrace();		
+	            						}
 	            					Alert win = new Alert(AlertType.INFORMATION);
 	            					win.setContentText("BRAVO");
 	            					win.showAndWait();
+	            					chooseLevel(primaryStage,indexPlayer);
+	            					
 	            				}	
 	        				}
 	        				/*else {  //if unauthorized movement, buttons get red for a moment
@@ -400,7 +413,13 @@ public class Main extends Application {
 				}
 				
 			});
-			
+			Label bestScore = new Label();
+			bestScore.setFont(new Font("Berlin Sans FB",30));
+			if (bScore == null) {
+				bestScore.setText("Best score : Not finished yet");
+			}else {
+				bestScore.setText("Best score : " + Integer.toString(bScore));
+			}
 			HBox shuffleBox=new HBox(shuffle,randomShuffle);
 			shuffleBox.setSpacing(10);
 			shuffleBox.setAlignment(Pos.CENTER);
@@ -416,7 +435,7 @@ public class Main extends Application {
 			
 			GridPane goalGridpane=createGoal(primaryStage,100,game);
 			goalGridpane.setAlignment(Pos.CENTER);
-			VBox informationBox= new VBox(levelName,countLabel);
+			VBox informationBox= new VBox(levelName,countLabel,bestScore);
 			informationBox.setAlignment(Pos.CENTER);
 			VBox buttonsBox=new VBox(shuffleBox,btnBack);
 			buttonsBox.setAlignment(Pos.CENTER);
