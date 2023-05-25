@@ -140,6 +140,10 @@ public void print() // Displays a grid
         
 }
 
+public Grid getGoal() {
+	return this.goal;
+}
+	
 public boolean isValidated(int i, int j) 
 /*
 
