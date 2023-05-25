@@ -9,12 +9,16 @@ private String pseudo;
 private int levelMax;
 private Game[] gameArray;  // curentGame, if player want continue after 
 //listescore
+private Integer[] bestScores;
 public Player(String pseudo){
     this.pseudo=pseudo;
     this.levelMax=1;
     this.gameArray = new Game[10];
-    for (int i=0;i<10;i++)
-    {this.gameArray[i]=null;}
+    this.bestScores = new Integer[10];
+    for (int i=0;i<10;i++){
+    	this.gameArray[i]=null;
+    	this.bestScores[i]=null;
+    	}
 }
 
 public int getLevelMax() {return this.levelMax;}
@@ -23,6 +27,11 @@ public void incLevelMax() {
 }
 public String getPseudo() {return this.pseudo;}
 public Game[] getGameArray() {return this.gameArray;}
+public Integer[] getBestScores() {return this.bestScores;}
+
+public void setBestScores(int i, int score) {
+	this.bestScores[i] = score;
+}
 
 
 public void Play()
