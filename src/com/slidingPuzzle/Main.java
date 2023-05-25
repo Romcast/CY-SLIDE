@@ -468,7 +468,7 @@ public class Main extends Application {
 	            	
 	            	
 	            	
-					switch(game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
+					switch(game.getGrid().getGoal().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
 	                {
 	                case EmptyCell: 
 	                	String cellText=" ";
@@ -482,7 +482,7 @@ public class Main extends Application {
 	                    break;
 	                    
 	                case GameCell: 
-	                    cellText=game.getGrid().getGrid()[i][j].getValue().toString() ;
+	                    cellText=game.getGrid().getGoal().getGrid()[i][j].getValue().toString() ;
 	                    cellLabel.setText(cellText);
 	                    break;
 	                    
