@@ -16,12 +16,13 @@ import javafx.geometry.Pos;
 //import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
-
+import javafx.animation.PauseTransition;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.*;
 import java.util.HashMap;
+import javafx.util.Duration;
 
 public class Main extends Application {
 	//static Scene players = null;
@@ -311,66 +312,72 @@ public class Main extends Application {
 					
 					//button of grid, click on two of them to swap them
 					button.setOnAction(new EventHandler<ActionEvent>(){
-						
-						
-	        		@Override
-	        		public void handle(ActionEvent event) {
-	        			if(game.getType()==null) {
-	        				Alert shuffleAlert=new Alert(AlertType.WARNING);
-	        				shuffleAlert.setContentText("You must shuffle before playing.");
-	        				shuffleAlert.showAndWait();
-	        			}
-	        			if(swap==null) {// register first button as source
-	        				swap=button;
-	        				row=gridpane.getRowIndex(button);
-	        				column=gridpane.getColumnIndex(button);
-	        				System.out.println(row +","+column);
-	        				System.out.println("init");
-	        				
-	        			}
-	        			else { // register 2nd one as target
-	        				int row2=gridpane.getRowIndex(button);
-	        				int column2=gridpane.getColumnIndex(button);
-	        				if(game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
-	        					String tempText=button.getText();
-	            				button.setText(swap.getText());
-	            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
-	            				System.out.println("swap");
-	            				game.getGrid().print();
-	            				countLabel.setText("Nombre de coups: " + game.getScore());
-	            				if(game.gameOver()) {
-	            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
-	            					if (bScore == null || game.getScore() < bScore) {
-	            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
-	            					}
-	            					try {
-	            						writePlayerFile(playerArray);
-	            					    } catch (ClassNotFoundException | IOException e) {
-	            						// TODO Auto-generated catch block
-	            						e.printStackTrace();		
-	            						}
-	            					Alert win = new Alert(AlertType.INFORMATION);
-	            					win.setContentText("BRAVO");
-	            					win.showAndWait();
-	            					chooseLevel(primaryStage,indexPlayer);
-	            					
-	            				}	
-	        				}
-	        				/*else {  //if unauthorized movement, buttons get red for a moment
-	        					button.setStyle("-fx-background-color: red;");
-	        					((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("-fx-background-color: red;");
-	        					try{
-	        						Thread.sleep(1000);	
-	        					}
-	        					catch(Exception e) {
-	        						e.printStackTrace();
-	        					}
-	    						button.setStyle("");
-	        					((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("");		
-	       					}*/
-	        				swap=null;
-	        				}
-	        			}		
+		        		@Override
+			        	public void handle(ActionEvent event) {
+			        		if(game.getType()==null) {
+			        			Alert shuffleAlert=new Alert(AlertType.WARNING);
+			        			shuffleAlert.setContentText("You must shuffle before playing.");
+			        			shuffleAlert.showAndWait();
+			        		}
+			        		else {
+			        			if(swap==null) {// register first button as source
+			        				swap=button;
+			        				row=gridpane.getRowIndex(button);
+			        				column=gridpane.getColumnIndex(button);
+			        				System.out.println(row +","+column);
+			        				System.out.println("init");
+			        				
+			        			}
+			        			else { // register 2nd one as target
+			        				int row2=gridpane.getRowIndex(button);
+			        				int column2=gridpane.getColumnIndex(button);
+			        				if(game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
+			        					String tempText=button.getText();
+			            				button.setText(swap.getText());
+			            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
+			            				System.out.println("swap");
+			            				game.getGrid().print();
+			            				countLabel.setText("Nombre de coups: " + game.getScore());
+			            				if(game.gameOver()) {
+			            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
+			            					if (bScore == null || game.getScore() < bScore) {
+			            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
+			            					}
+			            					try {
+			            						writePlayerFile(playerArray);
+			            					    } catch (ClassNotFoundException | IOException e) {
+			            						// TODO Auto-generated catch block
+			            						e.printStackTrace();		
+			            						}
+			            					Alert win = new Alert(AlertType.INFORMATION);
+			            					win.setContentText("BRAVO");
+			            					win.showAndWait();
+			            					chooseLevel(primaryStage,indexPlayer);
+			            					
+			            				}	
+			        				}
+			        				else {  //if unauthorized movement, buttons get red for a moment
+			        					button.setStyle("-fx-background-color: red;");
+			        					((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("-fx-background-color: red;");
+			        					int duration=300;
+			        					PauseTransition pause = new PauseTransition(Duration.millis(duration));
+			        					pause.setOnFinished(new EventHandler<ActionEvent>() {
+			        			            public void handle(ActionEvent event) {
+			        			            	((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("");
+				        						button.setStyle("");
+			        			            }
+				        			    });
+				        			    pause.play();
+			        			            
+			        						
+			        						
+			    						//button.setStyle("");
+			        					//((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("");		
+			       					}
+			        				swap=null;
+			        			}
+			        		}
+		        		}		
 					});
 		
 				}
