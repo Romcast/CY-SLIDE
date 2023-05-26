@@ -387,9 +387,13 @@ public class Main extends Application {
 			shuffle.setFont(new Font("Berlin Sans FB",30));
 			shuffle.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
+				
+				
 				public void handle(ActionEvent event) {
 					
 					game.getGrid().stepByStepShuffle();
+					game.setScore(0);
+					countLabel.setText("Nombre de coups: " + game.getScore());
 					game.setType(ShuffleType.StepByStep);
 					game.setIsSolvable(true);
 					updateGrid(gridpane,game.getGrid());
@@ -405,6 +409,8 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					game.getGrid().randomShuffled();
+					game.setScore(0);
+					countLabel.setText("Nombre de coups: " + game.getScore());
 					game.setType(ShuffleType.Random);
 					updateGrid(gridpane,game.getGrid());
 					//ajouter une condition pour verifier solvalble

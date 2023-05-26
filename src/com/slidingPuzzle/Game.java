@@ -77,6 +77,10 @@ public class Game implements Serializable {
     	this.type=type;
     }
     
+    public ShuffleType getType() {
+    	return(this.type);
+    }
+    
     public Grid getGrid() {
         return this.grid;
     }
@@ -90,6 +94,9 @@ public class Game implements Serializable {
     
     public int getScore() {
     	return this.score;
+    }
+    public void setScore(int score) {
+    	this.score=score;
     }
     
     public boolean moveCell(Cell C1, Cell C2) {
