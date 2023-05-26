@@ -315,6 +315,11 @@ public class Main extends Application {
 						
 	        		@Override
 	        		public void handle(ActionEvent event) {
+	        			if(game.getType()==null) {
+	        				Alert shuffleAlert=new Alert(AlertType.WARNING);
+	        				shuffleAlert.setContentText("You must shuffle before playing.");
+	        				shuffleAlert.showAndWait();
+	        			}
 	        			if(swap==null) {// register first button as source
 	        				swap=button;
 	        				row=gridpane.getRowIndex(button);
@@ -381,6 +386,7 @@ public class Main extends Application {
 					game.setType(ShuffleType.StepByStep);
 					game.setIsSolvable(true);
 					updateGrid(gridpane,game.getGrid());
+					
 					
 				}
 			});
