@@ -415,12 +415,13 @@ public class Main extends Application {
 				
 				public void handle(ActionEvent event) {
 					
-					game.getGrid().stepByStepShuffle();
+				
 					game.setScore(0);
+					
 					countLabel.setText("Current score : " + game.getScore());
 					game.setType(ShuffleType.StepByStep);
 					game.setIsSolvable(true);
-					shuffleType.setText("Shuffle type : Random");
+					shuffleType.setText("Shuffle type : StepByStep");
 					solvable.setText("The grid is Solvable");
 					updateGrid(gridpane,game.getGrid());
 					
@@ -434,11 +435,11 @@ public class Main extends Application {
 			randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					game.getGrid().randomShuffled();
+
 					game.setScore(0);
-					countLabel.setText("Nombre de coups: " + game.getScore());
+					countLabel.setText("Current score : " + game.getScore());
 					game.setType(ShuffleType.Random);
-					shuffleType.setText("Shuffle type : Shuffled Step by Step");
+					shuffleType.setText("Shuffle type : Random");
 					if (game.getIsSolvable()){
 						solvable.setText("The grid is Solvable");
 					}else {
