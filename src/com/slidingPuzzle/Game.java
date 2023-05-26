@@ -75,6 +75,22 @@ public class Game implements Serializable {
     
     public void setType(ShuffleType type) {
     	this.type=type;
+    	switch (type) {
+        case StepByStep:
+            this.grid.stepByStepShuffle();
+            this.isSolvable = true;
+            break;
+        case Random:
+        	
+            this.grid.randomShuffled();
+            
+            this.isSolvable = this.grid.isSolvable();//A changer
+            break;
+
+        default:
+            break;
+    }
+    	
     }
     
     public ShuffleType getType() {
@@ -109,7 +125,9 @@ public class Game implements Serializable {
     
     public boolean gameOver() {
     	if (this.grid.gameOver()) {
-    		this.player.incLevelMax();
+    		if (this.level == this.player.getLevelMax()){
+    			this.player.incLevelMax();
+    		}
     		return true;
     	}
     	return false;
