@@ -336,7 +336,7 @@ public class Main extends Application {
 					button.setOnAction(new EventHandler<ActionEvent>(){
 		        		@Override
 			        	public void handle(ActionEvent event) {
-			        		if(game.getType()!=null) { // A modif présentation
+			        		if(game.getType()==null) { // A modif présentation
 			        			
 			        			
 			        			Alert shuffleAlert=new Alert(AlertType.WARNING);
@@ -482,7 +482,7 @@ public class Main extends Application {
 			ScrollPane scrollPane = new ScrollPane();
 			scrollPane.setContent(gridpane);
 			scrollPane.setFitToHeight(true);
-			scrollPane.setFitToWidth(true);
+			scrollPane.setFitToWidth(false);
 			scrollPane.setMaxSize(600,600);
 			GridPane goalGridpane=createGoal(primaryStage,100,game);
 			goalGridpane.setAlignment(Pos.CENTER);
