@@ -336,7 +336,9 @@ public class Main extends Application {
 					button.setOnAction(new EventHandler<ActionEvent>(){
 		        		@Override
 			        	public void handle(ActionEvent event) {
-			        		if(game.getType()==null) {
+			        		if(game.getType()!=null) { // A modif présentation
+			        			
+			        			
 			        			Alert shuffleAlert=new Alert(AlertType.WARNING);
 			        			shuffleAlert.setContentText("You must shuffle before playing.");
 			        			shuffleAlert.showAndWait();
