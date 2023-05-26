@@ -229,10 +229,19 @@ return :
 
 public void stepByStepShuffle() 
 	{
+	
+		
 		Random random = new Random();
         int nbEmptyCells,randomEmptyCells,randomMove,iEmpty,jEmpty,iNext,jNext;
         ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
         int l = 0;
+        
+        for (int i =0; i<this.nbRows;i++) {
+        	for (int j =0; j<this.nbColumns;j++) {
+        		
+        		this.grid[i][j]=this.goal.grid[i][j].copyCell();
+        	}	
+        }
 		while (!(this.wellShuffled() && l>100)) {
             
 			l++;
@@ -265,6 +274,12 @@ public void stepByStepShuffle()
     Random random = new Random();
     ArrayList<Cell> cellsList = new ArrayList<>();
     ArrayList<Cell> cpCellsList = new ArrayList<>();
+    for (int i =0; i<this.nbRows;i++) {
+    	for (int j =0; j<this.nbColumns;j++) {
+    		
+    		this.grid[i][j]=this.goal.grid[i][j].copyCell();
+    	}	
+    }
     int randomIndex;
     Cell randomCell;
     // Collect all the non-UnexistantCell cells from the goal grid
@@ -407,6 +422,26 @@ public ArrayList<int[]> nbPossibleMove(int i,int j){
 
     return possibleMove;
 
+}
+
+public Grid clone() {
+    Grid cloneGrid = new Grid();
+    cloneGrid.goal = new Grid();
+    cloneGrid.grid = new Cell[this.nbRows][this.nbColumns]; 
+    cloneGrid.goal.grid = new Cell[this.nbRows][this.nbColumns]; 
+    cloneGrid.nbRows = this.nbRows;
+    cloneGrid.nbColumns = this.nbColumns;
+    cloneGrid.nbLevel = this.nbLevel;
+
+
+    for (int i = 0; i < this.nbRows; i++) {
+        for (int j = 0; j < this.nbColumns; j++) {
+            cloneGrid.grid[i][j] = this.grid[i][j].copyCell();
+            cloneGrid.goal.grid[i][j] = this.goal.grid[i][j].copyCell();
+        }
+    }
+
+    return cloneGrid;
 }
 
 }

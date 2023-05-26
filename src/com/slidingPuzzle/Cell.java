@@ -48,5 +48,9 @@ public boolean equals(Cell C1){
     return false;
 }
 
+public Cell copyCell(){
+    Cell cp = new Cell(this.row,this.column,this.value,this.type);
+    return cp;
+}
 
 }
