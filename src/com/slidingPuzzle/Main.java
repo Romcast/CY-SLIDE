@@ -225,7 +225,7 @@ public class Main extends Application {
             int maxLevel=playerArray[indexPlayer].getLevelMax();
             VBox description=new VBox();
 			VBox vboxP2=new VBox();
-			Label Level= new Label("Level  Score Shuffle  ShuffleRandom ");
+			Label Level= new Label("Level / Your BestScore ");
 			Level.setFont(new Font("Berlin Sans FB",40));
             description.getChildren().add(Level);
             description.setAlignment(Pos.CENTER);
@@ -275,8 +275,30 @@ public class Main extends Application {
 			Game game = playerArray[indexPlayer].getGameArray()[indexLevel];
 			Integer bScore = playerArray[indexPlayer].getBestScores()[indexLevel];
 			GridPane gridpane= new GridPane();
-			Label countLabel= new Label("Nombre de coups: " + game.getScore());
+			Label countLabel= new Label("Current Score : " + game.getScore());
 			countLabel.setFont(new Font("Berlin Sans FB",30));
+
+			Label shuffleType = new Label();
+			shuffleType.setFont(new Font("Berlin Sans FB",30));
+			Label solvable = new Label();
+			solvable.setFont(new Font("Berlin Sans FB",30));
+			if (game.getType() == null) {
+				shuffleType.setText("Shuffle type : Not shuffled yet");
+			}else {
+				if (game.getType() == ShuffleType.StepByStep) {
+					shuffleType.setText("Shuffle type : Shuffled step by step");
+				}
+				if (game.getType() == ShuffleType.Random) {
+					shuffleType.setText("Shuffle type : Random");
+				}
+				
+				if (game.getIsSolvable()) {
+					solvable.setText("The grid is solvable");
+				}else {
+					solvable.setText("The grid is not solvable");
+				}
+				
+			}
 			//displays initial chosen level
 			for (int i=0; i<game.getGrid().getNbRows(); i++) {
 				for (int j=0; j<game.getGrid().getNbColumns();j++) {
@@ -337,7 +359,7 @@ public class Main extends Application {
 			            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
 			            				System.out.println("swap");
 			            				game.getGrid().print();
-			            				countLabel.setText("Nombre de coups: " + game.getScore());
+			            				countLabel.setText("Current score : " + game.getScore());
 			            				if(game.gameOver()) {
 			            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
 			            					if (bScore == null || game.getScore() < bScore) {
@@ -393,9 +415,11 @@ public class Main extends Application {
 					
 					game.getGrid().stepByStepShuffle();
 					game.setScore(0);
-					countLabel.setText("Nombre de coups: " + game.getScore());
+					countLabel.setText("Current score : " + game.getScore());
 					game.setType(ShuffleType.StepByStep);
 					game.setIsSolvable(true);
+					shuffleType.setText("Shuffle type : Random");
+					solvable.setText("The grid is Solvable");
 					updateGrid(gridpane,game.getGrid());
 					
 					
@@ -412,6 +436,12 @@ public class Main extends Application {
 					game.setScore(0);
 					countLabel.setText("Nombre de coups: " + game.getScore());
 					game.setType(ShuffleType.Random);
+					shuffleType.setText("Shuffle type : Shuffled Step by Step");
+					if (game.getIsSolvable()){
+						solvable.setText("The grid is Solvable");
+					}else {
+						solvable.setText("The grid is not Solvable");
+					}
 					updateGrid(gridpane,game.getGrid());
 					//ajouter une condition pour verifier solvalble
 					
@@ -451,10 +481,9 @@ public class Main extends Application {
 			scrollPane.setFitToHeight(true);
 			scrollPane.setFitToWidth(true);
 			scrollPane.setMaxSize(600,600);
-			
 			GridPane goalGridpane=createGoal(primaryStage,100,game);
 			goalGridpane.setAlignment(Pos.CENTER);
-			VBox informationBox= new VBox(levelName,countLabel,bestScore);
+			VBox informationBox= new VBox(levelName,shuffleType,countLabel,bestScore,solvable);
 			informationBox.setAlignment(Pos.CENTER);
 			VBox buttonsBox=new VBox(shuffleBox,btnBack);
 			buttonsBox.setAlignment(Pos.CENTER);
