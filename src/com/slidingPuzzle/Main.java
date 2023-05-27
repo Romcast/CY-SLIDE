@@ -36,6 +36,7 @@ public class Main extends Application {
     static int row;
 	static int column;
 	
+	
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
 		try {
@@ -272,6 +273,7 @@ public class Main extends Application {
 			primaryStage.setScene(new Scene(newrootPlayer2,screenBounds.getWidth(), screenBounds.getHeight()-25));
 		}
 		public static void playLevel(Stage primaryStage,int indexLevel,int indexPlayer) {
+			
 			Game game = playerArray[indexPlayer].getGameArray()[indexLevel];
 			Integer bScore = playerArray[indexPlayer].getBestScores()[indexLevel];
 			GridPane gridpane= new GridPane();
@@ -303,14 +305,14 @@ public class Main extends Application {
 			for (int i=0; i<game.getGrid().getNbRows(); i++) {
 				for (int j=0; j<game.getGrid().getNbColumns();j++) {
 					Button button=new Button();
-					button.setPrefSize(100, 100);
-					button.setMinSize(70, 70);
+					button.setPrefSize(90, 90);
+					button.setMinSize(50, 50);
 					button.setMaxSize(150,150);
 					button.setFont(new Font("Berlin Sans FB",40));
 	            	gridpane.add(button,j,i);
 	            	
 	            	
-					switch(game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
+					switch(game.getGrid().getGrid()[i][j].getType()) 
 	                {
 	                case EmptyCell: 
 	                	String buttonText=" ";
@@ -336,6 +338,7 @@ public class Main extends Application {
 					button.setOnAction(new EventHandler<ActionEvent>(){
 		        		@Override
 			        	public void handle(ActionEvent event) {
+		        			
 			        		if(game.getType()==null) { // A modif présentation
 			        			
 			        			
@@ -344,20 +347,61 @@ public class Main extends Application {
 			        			shuffleAlert.showAndWait();
 			        		}
 			        		else {
-			        			if(swap==null) {// register first button as source
-			        				swap=button;
+			        			int oneClickRow=gridpane.getRowIndex(button);
+		        				int oneClickColumn=gridpane.getColumnIndex(button);
+		        				
+			        			if(game.getGrid().nbPossibleMove(row,column).size()==1) {
+			        				System.out.print("q");
+			        				int row2=oneClickRow+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[0];
+			        				int column2=oneClickColumn+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[1];
+			        				game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[oneClickRow][oneClickColumn]);
+			        				String tempText=((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).getText();
+			        				((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).setText(button.getText());
+		            				((Button)gridpane.getChildren().get(oneClickRow*game.getGrid().getNbColumns()+oneClickColumn)).setText(tempText);// () needed because setText doesn't work on every node
+		            				
+		            				
+		            				System.out.println("swap");
+		            				game.getGrid().print();
+		            				countLabel.setText("Current score : " + game.getScore());
+			        			
+		            				if(game.gameOver()) {
+		            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
+		            					if (bScore == null || game.getScore() < bScore) {
+		            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
+		            					}
+		            					try {
+		            						writePlayerFile(playerArray);
+		            					    } catch (ClassNotFoundException | IOException e) {
+		            						// TODO Auto-generated catch block
+		            						e.printStackTrace();		
+		            						}
+		            					Alert win = new Alert(AlertType.INFORMATION);
+		            					win.setContentText("BRAVO");
+		            					win.showAndWait();
+		            					chooseLevel(primaryStage,indexPlayer);           					
+		            				}	
+			        			}
+			        			
+			        			else if(swap==null) {// register first button as source
+			        				
+		        					swap=button;
 			        				row=gridpane.getRowIndex(button);
 			        				column=gridpane.getColumnIndex(button);
 			        				System.out.println(row +","+column);
-			        				System.out.println("init");
-			        				
-			        			}
+			        				System.out.println("init");		        				
+		        				
+		        				}
+			        			
 			        			else { // register 2nd one as target
+			        				System.out.println("test "+swap.getText());
 			        				int row2=gridpane.getRowIndex(button);
 			        				int column2=gridpane.getColumnIndex(button);
+			        				System.out.println(row2+":"+column2);
 			        				if(game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
 			        					String tempText=button.getText();
 			            				button.setText(swap.getText());
+			            				System.out.println("test "+swap.getText()+" a "+tempText);
+			            				
 			            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
 			            				System.out.println("swap");
 			            				game.getGrid().print();
@@ -380,7 +424,9 @@ public class Main extends Application {
 			            					
 			            				}	
 			        				}
+			        				
 			        				else {  //if unauthorized movement, buttons get red for a moment
+			        					System.out.println(row+";"+column+"    "+ row2+";"+column2);
 			        					button.setStyle("-fx-background-color: red;");
 			        					((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("-fx-background-color: red;");
 			        					int duration=300;
@@ -392,7 +438,8 @@ public class Main extends Application {
 			        			            }
 				        			    });
 				        			    pause.play();
-			        			            
+				        			    System.out.println("faux mouv"+button.getText()+((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).getText());
+				        			    System.out.println(((Button) gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).getText());
 			        						
 			        						
 			    						//button.setStyle("");
@@ -400,6 +447,7 @@ public class Main extends Application {
 			       					}
 			        				swap=null;
 			        			}
+		        			
 			        		}
 		        		}		
 					});
