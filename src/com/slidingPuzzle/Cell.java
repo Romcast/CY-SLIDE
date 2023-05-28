@@ -51,11 +51,20 @@ public int getColumn() {return this.column;}
 public Integer getValue() {return this.value;}
 public CellType getType() {return this.type;}
 
-public boolean equals(Cell C1){
-
-    if (this.row==C1.row && this.column==C1.column && this.value==C1.value && this.type==C1.type) {return true;}
-    return false;
+@Override
+public boolean equals(Object obj) {
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+        return false;
+    }
+    Cell otherCell = (Cell) obj;
+    return 
+           this.value == otherCell.value &&
+           this.type == otherCell.type;
 }
+
 
 public Cell copyCell(){
     Cell cp = new Cell(this.row,this.column,this.value,this.type);

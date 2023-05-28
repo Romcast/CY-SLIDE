@@ -1,4 +1,5 @@
-import java.util.Scanner;
+import java.util.*;
+
 import java.io.*;
 
 
@@ -90,7 +91,7 @@ while (!game.getGrid().gameOver()) {
   System.out.println("Quelle case voulez-vous modifier ? Taper 'Help' pour résoudre");
     String input = scanner.next();
     if (input.equalsIgnoreCase("Help")) {
-        List<Grid> solution = game.getGrid().solved(game.getGrid());
+        ArrayList<Grid> solution = game.getGrid().solved(game.getGrid());
         if (solution != null) {
             for (Grid grid : solution) {
                 grid.print();

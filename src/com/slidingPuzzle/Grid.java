@@ -482,22 +482,23 @@ public boolean equals(Object obj) {
     if (this == obj) {
         return true;
     }
-    if (obj == null || getClass() != obj.getClass()) {
+    if (obj == null  || getClass() != obj.getClass()) {
         return false;
     }
     Grid other = (Grid) obj;
-    if (nbRows != other.nbRows || nbColumns != other.nbColumns || nbLevel != other.nbLevel) {
-        return false;
-    }
+
     for (int i = 0; i < nbRows; i++) {
         for (int j = 0; j < nbColumns; j++) {
-            if (!grid[i][j].equals(other.grid[i][j])) {
+            Cell thisCell = grid[i][j];
+            Cell otherCell = other.grid[i][j];
+            if (!other.grid[i][j].equals(this.grid[i][j]) ){
                 return false;
             }
         }
     }
     return true;
 }
+
 
 @Override
 
@@ -599,7 +600,7 @@ private static int calculateHeuristicCost(Grid grid) {
             
         }
     }
-    //System.out.println("h = "+cost);
+    System.out.println("h = "+cost);
     return cost;
 }
 
