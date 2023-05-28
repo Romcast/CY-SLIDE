@@ -87,7 +87,19 @@ public void Play()
 while (!game.getGrid().gameOver()) {
 	
     game.print();
-    System.out.println("Quelle case voulez-vous modifier ?");
+  System.out.println("Quelle case voulez-vous modifier ? Taper 'Help' pour résoudre");
+    String input = scanner.next();
+    if (input.equalsIgnoreCase("Help")) {
+        List<Grid> solution = game.getGrid().solved(game.getGrid());
+        if (solution != null) {
+            for (Grid grid : solution) {
+                grid.print();
+            }
+        } else {
+            System.out.println("No solution found.");
+        }
+        break; 
+    }
     
     if (scanner.hasNextInt()) {
         i1 = scanner.nextInt();
