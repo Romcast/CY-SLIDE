@@ -349,6 +349,7 @@ public void stepByStepShuffle()
                     this.grid[i][j].setValue(randomCell.getValue());
                     this.grid[i][j].setRow(i);
                     this.grid[i][j].setColumn(j);
+		    this.grid[i][j].setFinalPosition(randomCell.getFinalPosition());
                     cpCellsList.remove(randomIndex);
                     
                 }
