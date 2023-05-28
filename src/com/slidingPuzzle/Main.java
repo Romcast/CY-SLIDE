@@ -353,36 +353,43 @@ public class Main extends Application {
 			        			int oneClickRow=gridpane.getRowIndex(button);
 		        				int oneClickColumn=gridpane.getColumnIndex(button);
 		        				
-			        			if(game.getGrid().nbPossibleMove(row,column).size()==1) {
-			        				System.out.print("q");
-			        				int row2=oneClickRow+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[0];
-			        				int column2=oneClickColumn+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[1];
-			        				game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[oneClickRow][oneClickColumn]);
-			        				String tempText=((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).getText();
-			        				((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).setText(button.getText());
-		            				((Button)gridpane.getChildren().get(oneClickRow*game.getGrid().getNbColumns()+oneClickColumn)).setText(tempText);// () needed because setText doesn't work on every node
-		            				
-		            				
-		            				System.out.println("swap");
-		            				game.getGrid().print();
-		            				countLabel.setText("Current score : " + game.getScore());
-			        			
-		            				if(game.gameOver()) {
-		            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
-		            					if (bScore == null || game.getScore() < bScore) {
-		            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
-		            					}
-		            					try {
-		            						writePlayerFile(playerArray);
-		            					    } catch (ClassNotFoundException | IOException e) {
-		            						// TODO Auto-generated catch block
-		            						e.printStackTrace();		
-		            						}
-		            					Alert win = new Alert(AlertType.INFORMATION);
-		            					win.setContentText("BRAVO");
-		            					win.showAndWait();
-		            					chooseLevel(primaryStage,indexPlayer);           					
-		            				}	
+			        			if(game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).size()==1) {
+			        				System.out.print("qqq");
+			        				try {
+				        				int row2=oneClickRow+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[0];
+				        				int column2=oneClickColumn+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[1];
+				        				game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[oneClickRow][oneClickColumn]);
+				        				String tempText=((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).getText();
+				        				((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).setText(button.getText());
+			            				((Button)gridpane.getChildren().get(oneClickRow*game.getGrid().getNbColumns()+oneClickColumn)).setText(tempText);// () needed because setText doesn't work on every node
+			            				System.out.println("swap");
+			            				game.getGrid().print();
+			            				countLabel.setText("Current score : " + game.getScore());
+				        			
+			            				if(game.gameOver()) {
+			            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
+			            					if (bScore == null || game.getScore() < bScore) {
+			            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
+			            					}
+			            					try {
+			            						writePlayerFile(playerArray);
+			            					    } catch (ClassNotFoundException | IOException e) {
+			            						// TODO Auto-generated catch block
+			            						e.printStackTrace();		
+			            						}
+			            					Alert win = new Alert(AlertType.INFORMATION);
+			            					win.setContentText("BRAVO");
+			            					win.showAndWait();
+			            					chooseLevel(primaryStage,indexPlayer);           					
+			            				}	
+				        			
+			        				}
+			        				catch (IndexOutOfBoundsException e) {
+			        				    // Bloc de code exécuté si l'exception est capturée
+			        				    System.out.println("Erreur : L'indice est hors limites.");
+			        				    e.printStackTrace(); // Afficher les détails de l'exception
+			        				}
+			            			
 			        			}
 			        			
 			        			else if(swap==null) {// register first button as source
@@ -519,6 +526,9 @@ public class Main extends Application {
 			
 			Button solveButton=new Button("Solve");
 			solveButton.setFont(new Font("Berlin Sans FB",30));
+			/*solveButton.setOnAction(new EventHandler() {
+				if(game.isS)
+			});*/
 			
 			Label bestScore = new Label();
 			bestScore.setFont(new Font("Berlin Sans FB",30));
