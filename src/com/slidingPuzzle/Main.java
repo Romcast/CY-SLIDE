@@ -308,7 +308,7 @@ public class Main extends Application {
 					button.setPrefSize(90, 90);
 					button.setMinSize(50, 50);
 					button.setMaxSize(150,150);
-					button.setFont(new Font("Berlin Sans FB",40));
+					button.setFont(new Font("Berlin Sans FB",30));
 	            	gridpane.add(button,j,i);
 	            	
 	            	
@@ -345,6 +345,9 @@ public class Main extends Application {
 			        			Alert shuffleAlert=new Alert(AlertType.WARNING);
 			        			shuffleAlert.setContentText("You must shuffle before playing.");
 			        			shuffleAlert.showAndWait();
+			        		}
+			        		else if(button.getStyle()=="-fx-background-color: grey;") {
+			        			
 			        		}
 			        		else {
 			        			int oneClickRow=gridpane.getRowIndex(button);
@@ -513,6 +516,10 @@ public class Main extends Application {
 				}
 				
 			});
+			
+			Button solveButton=new Button("Solve");
+			solveButton.setFont(new Font("Berlin Sans FB",30));
+			
 			Label bestScore = new Label();
 			bestScore.setFont(new Font("Berlin Sans FB",30));
 			if (bScore == null) {
@@ -532,11 +539,11 @@ public class Main extends Application {
 			scrollPane.setFitToHeight(true);
 			scrollPane.setFitToWidth(false);
 			scrollPane.setMaxSize(600,600);
-			GridPane goalGridpane=createGoal(primaryStage,100,game);
+			GridPane goalGridpane=createGoal(primaryStage,70,game);
 			goalGridpane.setAlignment(Pos.CENTER);
 			VBox informationBox= new VBox(levelName,shuffleType,countLabel,bestScore,solvable);
 			informationBox.setAlignment(Pos.CENTER);
-			VBox buttonsBox=new VBox(shuffleBox,btnBack);
+			VBox buttonsBox=new VBox(shuffleBox,solveButton,btnBack);
 			buttonsBox.setAlignment(Pos.CENTER);
 			buttonsBox.setSpacing(10);
 			VBox infoButtonBox = new VBox(informationBox,buttonsBox);
