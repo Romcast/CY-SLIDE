@@ -1,6 +1,7 @@
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -16,12 +17,17 @@ import javafx.geometry.Pos;
 //import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
-
+import javafx.animation.PauseTransition;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.util.Duration;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+
 
 public class Main extends Application {
 	//static Scene players = null;
@@ -34,7 +40,7 @@ public class Main extends Application {
 	static Button swap=null;
     static int row;
 	static int column;
-	static int countMove=0;
+	static Grid grille;
 	
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
@@ -75,6 +81,7 @@ public class Main extends Application {
 	}
 		
 		public static void intro(Stage primaryStage) {
+			primaryStage.setTitle("CY SLIDE");
 			BorderPane root = new BorderPane();
 			
 			VBox vbox1=new VBox();
@@ -224,7 +231,7 @@ public class Main extends Application {
             int maxLevel=playerArray[indexPlayer].getLevelMax();
             VBox description=new VBox();
 			VBox vboxP2=new VBox();
-			Label Level= new Label("Level  Score Shuffle  ShuffleRandom ");
+			Label Level= new Label("Level / Your BestScore ");
 			Level.setFont(new Font("Berlin Sans FB",40));
             description.getChildren().add(Level);
             description.setAlignment(Pos.CENTER);
@@ -232,33 +239,35 @@ public class Main extends Application {
             for(j=0;j<maxLevel;j++){
             	final int indexLevel = j;
             	HBox hboxP2 = new HBox();
-                Hyperlink Levelj= new Hyperlink("Level"+(j+1));
+                Hyperlink Levelj= new Hyperlink("Level"+(indexLevel+1));
                 Levelj.setFont(new Font("Berlin Sans FB",40));
                 //Label scoreShuffle= new Label("Score Shuffle");
                 //Label scoreRandomShuffle=new Label("Score ShuffleRandom");
     		    Levelj.setOnAction(new EventHandler<ActionEvent>(){
     		    	public void handle(ActionEvent t) {
     		    		if (playerArray[indexPlayer].getGameArray()[indexLevel] == null){
-    		    			playerArray[indexPlayer].getGameArray()[indexLevel] = new Game(j,playerArray[indexPlayer]);
+    		    			playerArray[indexPlayer].getGameArray()[indexLevel] = new Game(indexLevel+1,playerArray[indexPlayer]);
     		    		}
-    		    		playLevel(primaryStage,playerArray[indexPlayer].getGameArray()[indexLevel],indexPlayer);
+    		    		playLevel(primaryStage,indexLevel,indexPlayer);
     		    	}
     		    });
-    		    Label score = new Label();
-    		    score.setFont(new Font("Berlin Sans FB",40));
-    		    if (playerArray[indexPlayer].getGameArray()[indexLevel] == null) {
-    		    	score.setText("Not played yet");
+    		    
+    		    Label bestScore = new Label();
+    		    bestScore.setFont(new Font("Berlin Sans FB",40));
+    		    if (playerArray[indexPlayer].getBestScores()[indexLevel] == null) {
+    		    	bestScore.setText("Not finished yet");
     		    }
     		    else {
-    		    	score.setText(Integer.toString(playerArray[indexPlayer].getGameArray()[j].getScore()));
-    		    	
+    		    	bestScore.setText(Integer.toString(playerArray[indexPlayer].getBestScores()[indexLevel]));
     		    }
-    		    hboxP2.getChildren().addAll(Levelj,score);
+    		    hboxP2.getChildren().addAll(Levelj,bestScore);
     		    hboxP2.setAlignment(Pos.CENTER);
+    		    hboxP2.setSpacing(20);
                	vboxP2.getChildren().add(hboxP2);
             }
             vboxP2.setAlignment(Pos.CENTER);
             Button btnBack = new Button("Go back to selection");
+            btnBack.setFont(new Font("Berlin Sans FB",30));
 			btnBack.setOnAction(new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent event) {
 					choosePlayer(primaryStage);
@@ -269,23 +278,47 @@ public class Main extends Application {
 			newrootPlayer2.setCenter(vboxP2);
 			primaryStage.setScene(new Scene(newrootPlayer2,screenBounds.getWidth(), screenBounds.getHeight()-25));
 		}
-		public static void playLevel(Stage primaryStage,Game game,int indexPlayer) {
+		public static void playLevel(Stage primaryStage,int indexLevel,int indexPlayer) {
+			
+			Game game = playerArray[indexPlayer].getGameArray()[indexLevel];
+			Integer bScore = playerArray[indexPlayer].getBestScores()[indexLevel];
 			GridPane gridpane= new GridPane();
-			//int countMove=0;
-			Label countLabel= new Label("Nombre de coups: " + game.getScore());
+			Label countLabel= new Label("Current Score : " + game.getScore());
 			countLabel.setFont(new Font("Berlin Sans FB",30));
+
+			Label shuffleType = new Label();
+			shuffleType.setFont(new Font("Berlin Sans FB",30));
+			Label solvable = new Label();
+			solvable.setFont(new Font("Berlin Sans FB",30));
+			if (game.getType() == null) {
+				shuffleType.setText("Shuffle type : Not shuffled yet");
+			}else {
+				if (game.getType() == ShuffleType.StepByStep) {
+					shuffleType.setText("Shuffle type : Shuffled step by step");
+				}
+				if (game.getType() == ShuffleType.Random) {
+					shuffleType.setText("Shuffle type : Random");
+				}
+				
+				if (game.getIsSolvable()) {
+					solvable.setText("The grid is solvable");
+				}else {
+					solvable.setText("The grid is not solvable");
+				}
+				
+			}
 			//displays initial chosen level
 			for (int i=0; i<game.getGrid().getNbRows(); i++) {
 				for (int j=0; j<game.getGrid().getNbColumns();j++) {
 					Button button=new Button();
-					button.setPrefSize(100, 100);
-					button.setMinSize(70, 70);
+					button.setPrefSize(90, 90);
+					button.setMinSize(50, 50);
 					button.setMaxSize(150,150);
-					button.setFont(new Font("Berlin Sans FB",40));
+					button.setFont(new Font("Berlin Sans FB",30));
 	            	gridpane.add(button,j,i);
 	            	
 	            	
-					switch(game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
+					switch(game.getGrid().getGrid()[i][j].getType()) 
 	                {
 	                case EmptyCell: 
 	                	String buttonText=" ";
@@ -309,50 +342,130 @@ public class Main extends Application {
 					
 					//button of grid, click on two of them to swap them
 					button.setOnAction(new EventHandler<ActionEvent>(){
-						
-						
-	        		@Override
-	        		public void handle(ActionEvent event) {
-	        			if(swap==null) {// register first button as source
-	        				swap=button;
-	        				row=gridpane.getRowIndex(button);
-	        				column=gridpane.getColumnIndex(button);
-	        				System.out.println(row +","+column);
-	        				System.out.println("init");
-	        				
-	        			}
-	        			else { // register 2nd one as target
-	        				int row2=gridpane.getRowIndex(button);
-	        				int column2=gridpane.getColumnIndex(button);
-	        				if(game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
-	        					String tempText=button.getText();
-	            				button.setText(swap.getText());
-	            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
-	            				System.out.println("swap");
-	            				game.getGrid().print();
-	            				countMove+=1;
-	            				countLabel.setText("Nombre de coups: " + game.getScore());
-	            				if(game.gameOver()) {
-	            					Alert win = new Alert(AlertType.INFORMATION);
-	            					win.setContentText("BRAVO");
-	            					win.showAndWait();
-	            				}	
-	        				}
-	        				/*else {  //if unauthorized movement, buttons get red for a moment
-	        					button.setStyle("-fx-background-color: red;");
-	        					((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("-fx-background-color: red;");
-	        					try{
-	        						Thread.sleep(1000);	
-	        					}
-	        					catch(Exception e) {
-	        						e.printStackTrace();
-	        					}
-	    						button.setStyle("");
-	        					((Button) gridpane.getChildren().get(row*level.getNbColumns()+column)).setStyle("");		
-	       					}*/
-	        				swap=null;
-	        				}
-	        			}		
+		        		@Override
+			        	public void handle(ActionEvent event) {
+		        			
+			        		if(game.getType()!=null) { // A modif pr�sentation
+			        			
+			        			
+			        			Alert shuffleAlert=new Alert(AlertType.WARNING);
+			        			shuffleAlert.setContentText("You must shuffle before playing.");
+			        			shuffleAlert.showAndWait();
+			        		}
+			        		else if(button.getStyle()=="-fx-background-color: grey;") {
+			        			
+			        		}
+			        		else {
+			        			int oneClickRow=gridpane.getRowIndex(button);
+		        				int oneClickColumn=gridpane.getColumnIndex(button);
+		        				
+			        			if(game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).size()==1) {
+			        				System.out.print("qqq");
+			        				try {
+				        				int row2=oneClickRow+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[0];
+				        				int column2=oneClickColumn+game.getGrid().nbPossibleMove(oneClickRow,oneClickColumn).get(0)[1];
+				        				game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[oneClickRow][oneClickColumn]);
+				        				String tempText=((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).getText();
+				        				((Button)gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).setText(button.getText());
+			            				((Button)gridpane.getChildren().get(oneClickRow*game.getGrid().getNbColumns()+oneClickColumn)).setText(tempText);// () needed because setText doesn't work on every node
+			            				System.out.println("swap");
+			            				game.getGrid().print();
+			            				countLabel.setText("Current score : " + game.getScore());
+				        			
+			            				if(game.gameOver()) {
+			            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
+			            					if (bScore == null || game.getScore() < bScore) {
+			            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
+			            					}
+			            					try {
+			            						writePlayerFile(playerArray);
+			            					    } catch (ClassNotFoundException | IOException e) {
+			            						// TODO Auto-generated catch block
+			            						e.printStackTrace();		
+			            						}
+			            					Alert win = new Alert(AlertType.INFORMATION);
+			            					win.setContentText("BRAVO");
+			            					win.showAndWait();
+			            					chooseLevel(primaryStage,indexPlayer);           					
+			            				}	
+				        			
+			        				}
+			        				catch (IndexOutOfBoundsException e) {
+			        				    // Bloc de code ex�cut� si l'exception est captur�e
+			        				    System.out.println("Erreur : L'indice est hors limites.");
+			        				    e.printStackTrace(); // Afficher les d�tails de l'exception
+			        				}
+			            			
+			        			}
+			        			
+			        			else if(swap==null) {// register first button as source
+			        				
+		        					swap=button;
+			        				row=gridpane.getRowIndex(button);
+			        				column=gridpane.getColumnIndex(button);
+			        				System.out.println(row +","+column);
+			        				System.out.println("init");		        				
+		        				
+		        				}
+			        			
+			        			else { // register 2nd one as target
+			        				System.out.println("test "+swap.getText());
+			        				int row2=gridpane.getRowIndex(button);
+			        				int column2=gridpane.getColumnIndex(button);
+			        				System.out.println(row2+":"+column2);
+			        				if(game.moveCell(game.getGrid().getGrid()[row2][column2],game.getGrid().getGrid()[row][column])) {//if moveCell authorized, swap text
+			        					String tempText=button.getText();
+			            				button.setText(swap.getText());
+			            				System.out.println("test "+swap.getText()+" a "+tempText);
+			            				
+			            				((Button)gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setText(tempText);// () needed because setText doesn't work on every node
+			            				System.out.println("swap");
+			            				game.getGrid().print();
+			            				countLabel.setText("Current score : " + game.getScore());
+			            				if(game.gameOver()) {
+			            					playerArray[indexPlayer].getGameArray()[indexLevel] = null;
+			            					if (bScore == null || game.getScore() < bScore) {
+			            						playerArray[indexPlayer].setBestScores(indexLevel,game.getScore());
+			            					}
+			            					try {
+			            						writePlayerFile(playerArray);
+			            					    } catch (ClassNotFoundException | IOException e) {
+			            						// TODO Auto-generated catch block
+			            						e.printStackTrace();		
+			            						}
+			            					Alert win = new Alert(AlertType.INFORMATION);
+			            					win.setContentText("BRAVO");
+			            					win.showAndWait();
+			            					chooseLevel(primaryStage,indexPlayer);
+			            					
+			            				}	
+			        				}
+			        				
+			        				else {  //if unauthorized movement, buttons get red for a moment
+			        					System.out.println(row+";"+column+"    "+ row2+";"+column2);
+			        					button.setStyle("-fx-background-color: red;");
+			        					((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("-fx-background-color: red;");
+			        					int duration=300;
+			        					PauseTransition pause = new PauseTransition(Duration.millis(duration));
+			        					pause.setOnFinished(new EventHandler<ActionEvent>() {
+			        			            public void handle(ActionEvent event) {
+			        			            	((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("");
+				        						button.setStyle("");
+			        			            }
+				        			    });
+				        			    pause.play();
+				        			    System.out.println("faux mouv"+button.getText()+((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).getText());
+				        			    System.out.println(((Button) gridpane.getChildren().get(row2*game.getGrid().getNbColumns()+column2)).getText());
+			        						
+			        						
+			    						//button.setStyle("");
+			        					//((Button) gridpane.getChildren().get(row*game.getGrid().getNbColumns()+column)).setStyle("");		
+			       					}
+			        				swap=null;
+			        			}
+		        			
+			        		}
+		        		}		
 					});
 		
 				}
@@ -362,12 +475,20 @@ public class Main extends Application {
 			shuffle.setFont(new Font("Berlin Sans FB",30));
 			shuffle.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
+				
+				
 				public void handle(ActionEvent event) {
 					
-					game.getGrid().stepByStepShuffle();
+				
+					game.setScore(0);
+					
+					countLabel.setText("Current score : " + game.getScore());
 					game.setType(ShuffleType.StepByStep);
 					game.setIsSolvable(true);
+					shuffleType.setText("Shuffle type : StepByStep");
+					solvable.setText("The grid is Solvable");
 					updateGrid(gridpane,game.getGrid());
+					
 					
 				}
 			});
@@ -378,8 +499,16 @@ public class Main extends Application {
 			randomShuffle.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					game.getGrid().randomShuffled();
+
+					game.setScore(0);
+					countLabel.setText("Current score : " + game.getScore());
 					game.setType(ShuffleType.Random);
+					shuffleType.setText("Shuffle type : Random");
+					if (game.getIsSolvable()){
+						solvable.setText("The grid is Solvable");
+					}else {
+						solvable.setText("The grid is not Solvable");
+					}
 					updateGrid(gridpane,game.getGrid());
 					//ajouter une condition pour verifier solvalble
 					
@@ -401,6 +530,77 @@ public class Main extends Application {
 				
 			});
 			
+
+            	Button solveButton=new Button("Solve");
+                solveButton.setFont(new Font("Berlin Sans FB",30));
+                solveButton.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent event) {
+                    	if (game.getIsSolvable()) {
+                        	ArrayList<Grid> solution = game.getGrid().solved(game.getGrid());
+                        	if (solution == null) {
+                        		Alert err = new Alert(AlertType.INFORMATION);
+            					err.setContentText("ERROR : SOLUTION NOT FOUND");
+            					err.showAndWait();
+                        	}
+                        	else {
+                        	Thread thread = new Thread(new Runnable() {
+                        		@Override
+                                public void run() {
+                                	Runnable updater = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateGrid(gridpane,grille);
+                                        }
+                                    };
+                                    for (Grid g : solution) {
+                                    	try {
+                                            Thread.sleep(100);
+                                        } catch (InterruptedException ex) {
+                                        }
+
+                                        // UI update is run on the Application thread
+                                    	grille = g;
+                                        Platform.runLater(updater);
+                                		
+                                        
+                                	}
+                                }
+                        	});
+                        	thread.setDaemon(true);
+                            thread.start();
+                            try {
+                                
+                                String filePath = "./data/levels/level_" + (indexLevel+1) + ".csv";
+                                File fileLevel = new File(filePath);
+                                game.setGrid(new Grid(fileLevel));
+                                game.setType(null);
+                                game.setScore(0);
+                                countLabel.setText("Current score : " + game.getScore());
+                                shuffleType.setText("Shuffle type : Not shuffled yet");
+                            } 
+                            
+                            catch (Exception e) {
+                            System.out.println(e.getMessage());
+                           
+                    	}
+                    }
+                    	}else {
+                    		Alert err = new Alert(AlertType.INFORMATION);
+        					err.setContentText("ERROR : THE GRID IS NOT SOLVABLE");
+        					err.showAndWait();
+                    	}
+                    }});
+
+                        
+            
+			
+			Label bestScore = new Label();
+			bestScore.setFont(new Font("Berlin Sans FB",30));
+			if (bScore == null) {
+				bestScore.setText("Best score : Not finished yet");
+			}else {
+				bestScore.setText("Best score : " + Integer.toString(bScore));
+			}
 			HBox shuffleBox=new HBox(shuffle,randomShuffle);
 			shuffleBox.setSpacing(10);
 			shuffleBox.setAlignment(Pos.CENTER);
@@ -411,20 +611,19 @@ public class Main extends Application {
 			ScrollPane scrollPane = new ScrollPane();
 			scrollPane.setContent(gridpane);
 			scrollPane.setFitToHeight(true);
-			scrollPane.setFitToWidth(true);
+			scrollPane.setFitToWidth(false);
 			scrollPane.setMaxSize(600,600);
-			
-			//GridPane goalGridpane=createGoal(primaryStage,100,playerArray[indexPlayer].getGameArray()[j]);
-			//goalGridpane.setAlignment(Pos.TOP_RIGHT);
-			VBox informationBox= new VBox(levelName,countLabel);
+			GridPane goalGridpane=createGoal(primaryStage,70,game);
+			goalGridpane.setAlignment(Pos.CENTER);
+			VBox informationBox= new VBox(levelName,shuffleType,countLabel,bestScore,solvable);
 			informationBox.setAlignment(Pos.CENTER);
-			VBox buttonsBox=new VBox(shuffleBox,btnBack);
+			VBox buttonsBox=new VBox(shuffleBox,solveButton,btnBack);
 			buttonsBox.setAlignment(Pos.CENTER);
 			buttonsBox.setSpacing(10);
 			VBox infoButtonBox = new VBox(informationBox,buttonsBox);
 			infoButtonBox.setSpacing(50);
 			infoButtonBox.setAlignment(Pos.CENTER);
-			HBox root = new HBox(scrollPane,infoButtonBox);
+			HBox root = new HBox(scrollPane,infoButtonBox,goalGridpane);
 			root.setAlignment(Pos.CENTER);
 			root.setPadding(new Insets(20));
 			root.setSpacing(100);	
@@ -443,13 +642,13 @@ public class Main extends Application {
 					cellLabel.setMinSize(50, 50);
 					cellLabel.setMaxSize(150,150);
 					cellLabel.setFont(new Font("Berlin Sans FB",30));
-					//cellLabel.setStyle("-fx-border-color: black");
+					cellLabel.setStyle("-fx-border-color: black");
 					cellLabel.setAlignment(Pos.CENTER);
 	            	goalGridpane.add(cellLabel,j,i);
 	            	
 	            	
 	            	
-					switch(game.getGrid().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
+					switch(game.getGrid().getGoal().getGrid()[i][j].getType()) //Class Grid has an attribute grid and an attribute goal
 	                {
 	                case EmptyCell: 
 	                	String cellText=" ";
@@ -463,7 +662,7 @@ public class Main extends Application {
 	                    break;
 	                    
 	                case GameCell: 
-	                    cellText=game.getGrid().getGrid()[i][j].getValue().toString() ;
+	                    cellText=game.getGrid().getGoal().getGrid()[i][j].getValue().toString() ;
 	                    cellLabel.setText(cellText);
 	                    break;
 	                    

@@ -1,4 +1,5 @@
-import java.util.Scanner;
+import java.util.*;
+
 import java.io.*;
 
 
@@ -9,12 +10,16 @@ private String pseudo;
 private int levelMax;
 private Game[] gameArray;  // curentGame, if player want continue after 
 //listescore
+private Integer[] bestScores;
 public Player(String pseudo){
     this.pseudo=pseudo;
     this.levelMax=1;
     this.gameArray = new Game[10];
-    for (int i=0;i<10;i++)
-    {this.gameArray[i]=null;}
+    this.bestScores = new Integer[10];
+    for (int i=0;i<10;i++){
+    	this.gameArray[i]=null;
+    	this.bestScores[i]=null;
+    	}
 }
 
 public int getLevelMax() {return this.levelMax;}
@@ -23,6 +28,11 @@ public void incLevelMax() {
 }
 public String getPseudo() {return this.pseudo;}
 public Game[] getGameArray() {return this.gameArray;}
+public Integer[] getBestScores() {return this.bestScores;}
+
+public void setBestScores(int i, int score) {
+	this.bestScores[i] = score;
+}
 
 
 public void Play()
@@ -78,7 +88,19 @@ public void Play()
 while (!game.getGrid().gameOver()) {
 	
     game.print();
-    System.out.println("Quelle case voulez-vous modifier ?");
+  System.out.println("Quelle case voulez-vous modifier ? Taper 'Help' pour résoudre");
+    String input = scanner.next();
+    if (input.equalsIgnoreCase("Help")) {
+        ArrayList<Grid> solution = game.getGrid().solved(game.getGrid());
+        if (solution != null) {
+            for (Grid grid : solution) {
+                grid.print();
+            }
+        } else {
+            System.out.println("No solution found.");
+        }
+        break; 
+    }
     
     if (scanner.hasNextInt()) {
         i1 = scanner.nextInt();
