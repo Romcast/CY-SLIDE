@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"AppMain"},{"p":"puzzle","l":"Cell"},{"p":"puzzle","l":"CellType"},{"p":"puzzle","l":"Game"},{"p":"puzzle","l":"Grid"},{"p":"puzzle","l":"Main"},{"p":"puzzle","l":"Player"},{"p":"<Unnamed>","l":"Screen"},{"p":"puzzle","l":"ShuffleType"}];updateSearchResults();
