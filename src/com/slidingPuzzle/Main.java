@@ -21,8 +21,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.util.Duration;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 
 public class Main extends Application {
 	//static Scene players = null;
@@ -524,11 +527,31 @@ public class Main extends Application {
 				
 			});
 			
-			Button solveButton=new Button("Solve");
-			solveButton.setFont(new Font("Berlin Sans FB",30));
-			/*solveButton.setOnAction(new EventHandler() {
-				if(game.isS)
-			});*/
+
+            	Button solveButton=new Button("Solve");
+                solveButton.setFont(new Font("Berlin Sans FB",30));
+                solveButton.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent event) {
+                        if (game.getIsSolvable()) {
+                        	ArrayList<Grid> solution = game.getGrid().solved(game.getGrid());
+                            if(solution!=null) {
+                                //Duration solveTransition=Duration.millis(000);
+                                //PauseTransition pause = new PauseTransition(solveTransition);
+                                
+                                    
+                                    updateGrid(gridpane, solution.get(i));
+                                    /*
+                                    
+                                    System.out.println("etape "+i);
+                                    pause.play();
+                                    solution.get(i).print();
+                                    */
+                                }
+                            
+                            
+                        }
+                        
+                    }});            
 			
 			Label bestScore = new Label();
 			bestScore.setFont(new Font("Berlin Sans FB",30));

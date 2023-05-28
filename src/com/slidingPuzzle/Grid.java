@@ -522,7 +522,7 @@ public ArrayList<Grid> solved(Grid initialGrid) {
     Map<Grid, Integer> gScore = new HashMap<>();
     gScore.put(initialGrid, 0);
     long startTime = System.currentTimeMillis();
-    long timeLimit = 1 * 15 * 1000; // 3 minutes en millisecondes
+    long timeLimit = 1 * 25 * 1000; // 3 minutes en millisecondes
     
     initialGrid.seth(calculateHeuristicCost(initialGrid));
     initialGrid.setf(initialGrid.geth()); // Calculer le coût total initial f
