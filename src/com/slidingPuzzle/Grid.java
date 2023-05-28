@@ -479,6 +479,7 @@ public void seth(int h) {
 
 @Override
 public boolean equals(Object obj) {
+	/* whange the function equals to correspond it with our class*/
     if (this == obj) {
         return true;
     }
@@ -515,36 +516,38 @@ public int hashCode()
 
 
 public ArrayList<Grid> solved(Grid initialGrid) {
+	/* For the function solved, we will use the A* algorithm, using Manhattan geometry as the heuristic method*/
     
-    PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf));
-    Set<Grid> closedSet = new HashSet<>();
-    Map<Grid, Grid> cameFrom = new HashMap<>();
-    Map<Grid, Integer> gScore = new HashMap<>();
+    PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf)); /* Sort by the totalcost f*/
+    Set<Grid> closedSet = new HashSet<>(); /* Where every analyzed grid will go */
+    Map<Grid, Grid> cameFrom = new HashMap<>();/* to link every grid and their children */
+    Map<Grid, Integer> gScore = new HashMap<>(); /* to represent the number of movement needed to reach this grid from the moment we used solve*/
     gScore.put(initialGrid, 0);
     long startTime = System.currentTimeMillis();
-    long timeLimit = 1 * 25 * 1000; // 3 minutes en millisecondes
+    long timeLimit = 1 * 25 * 1000; // 3 minutes 
     
     initialGrid.seth(calculateHeuristicCost(initialGrid));
-    initialGrid.setf(initialGrid.geth()); // Calculer le coÃ»t total initial f
+    initialGrid.setf(initialGrid.geth()); /* We initialize totalcost gscore and heuristicCost*/
 
     openSet.add(initialGrid);
     
     while (!openSet.isEmpty()) {
-    	// Vérifier si le temps limite est dépassé
+    	// Verify if we are over the time limit
         if (System.currentTimeMillis() - startTime > timeLimit) {
-            return null; // Temps limite dépassé, pas de solution trouvée
+            return null; // We are over the time limit, no solution found
         }
         Grid currentGrid = openSet.poll();
         
         
         if (currentGrid.gameOver()) {
-            return reconstructPath(cameFrom, currentGrid);
+            return reconstructPath(cameFrom, currentGrid); // if we achieve the goal, return the solution as a list of Grid
         }
         
-        
+        /* For every empty cell, we look every possible move, if we can move we clone the current grid and where we move. This is a child, there can be 1 to 4 children for every empty cells.
+	We calculate the Heuristiccost for every children. We will analyze every children and set a newG for everyone of them unless if they belong to closedSet. */
         ArrayList<Cell> emptyCells = currentGrid.listOfEmptyCells();
 
-        for (Cell emptyCell : emptyCells) {
+        for (Cell emptyCell : emptyCells) { 
             for (int[] moves : move) {
                 int nextI = emptyCell.getRow() + moves[0];
                 int nextJ = emptyCell.getColumn() + moves[1];
@@ -594,6 +597,7 @@ public ArrayList<Grid> solved(Grid initialGrid) {
 }
 
 private static int calculateHeuristicCost(Grid grid) {
+	/* Calculate the distance between a cell and his finalposition. We add that distance for every cell in the grid that can move */
     int cost = 0;
     grid.print();
     for (int i = 0; i < grid.getNbRows(); i++) {
@@ -614,6 +618,7 @@ private static int calculateHeuristicCost(Grid grid) {
 }
 
 private static ArrayList<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid currentGrid) {
+	/* We used the link of cameFrom, and recreate a path for the solution */
     ArrayList<Grid> path = new ArrayList<>();
     path.add(currentGrid);
 
