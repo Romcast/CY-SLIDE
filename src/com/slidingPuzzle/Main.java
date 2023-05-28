@@ -28,7 +28,11 @@ import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
-
+/**
+ * This class is the JAVAFX class that permit to start the game
+ * @author CYTech Student
+ *
+ */
 public class Main extends Application {
 	//static Scene players = null;
 	//static Scene creation = null;
