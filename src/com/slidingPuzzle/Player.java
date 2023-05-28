@@ -1,8 +1,11 @@
 import java.util.*;
-
 import java.io.*;
 
-
+/**
+ * This class implements the Player that will play the game
+ * @author CYTech Student
+ *
+ */
 public class Player implements Serializable
 {
 private static final long serialVersionUID = 1;
@@ -11,6 +14,11 @@ private int levelMax;
 private Game[] gameArray;  // curentGame, if player want continue after 
 //listescore
 private Integer[] bestScores;
+/**
+ * This constructor set the pseudo with the parameter, the levelmax at 1 and create to array 
+ * to stock the 10 levels and the 10 score of the player 
+ * @param pseudo 
+ */
 public Player(String pseudo){
     this.pseudo=pseudo;
     this.levelMax=1;
@@ -21,20 +29,45 @@ public Player(String pseudo){
     	this.bestScores[i]=null;
     	}
 }
-
+/**
+ * This getter permit to get the level max of the player
+ * @return
+ */
 public int getLevelMax() {return this.levelMax;}
+/**
+ * this method permit to increase the level max of one
+ */
 public void incLevelMax() {
 	this.levelMax++;
 }
+/**
+ * this getter permit to get the pseudo of the player
+ * @return
+ */
 public String getPseudo() {return this.pseudo;}
+/**
+ * this getter permit to get the game array of the player
+ * @return
+ */
 public Game[] getGameArray() {return this.gameArray;}
+/**
+ * this getter permit to get the best score array of the player
+ * @return
+ */
 public Integer[] getBestScores() {return this.bestScores;}
-
+/**
+ * this setter permit to set the player best score of the level i-1 at score
+ * @param i
+ * @param score
+ */
 public void setBestScores(int i, int score) {
 	this.bestScores[i] = score;
 }
 
-
+/**
+ * The method play permit to play in the console
+ * 
+ */
 public void Play()
 {
     Scanner scanner = new Scanner(System.in);
@@ -51,7 +84,7 @@ public void Play()
             } 
             else {
                 System.out.println("\nLe choix du niveau est invalide. Veuillez entrer un entier entre 1 et 10\n");
-                scanner.next(); // Lire et ignorer l'entrée non valide
+                scanner.next(); // Lire et ignorer l'entrÃ©e non valide
             }
             if(choice < 1 || choice > 10){
                 System.out.println("\nLe choix du niveau est invalide. Veuillez entrer un entier entre 1 et 10\n");
@@ -60,7 +93,7 @@ public void Play()
 
     
     while (shuffleChoice != 0 && shuffleChoice != 1) {
-        System.out.println("\nQuel type de mélange voulez-vous : 0 = StepByStep, 1 = Random\n");
+        System.out.println("\nQuel type de mÃ©lange voulez-vous : 0 = StepByStep, 1 = Random\n");
 
             if (scanner.hasNextInt()) {
                 shuffleChoice = scanner.nextInt();
@@ -73,12 +106,12 @@ public void Play()
                         type = ShuffleType.Random;
                         break;
                     default:
-                        System.out.println("Le choix doit être un entier (0 ou 1). Veuillez réessayer.");
+                        System.out.println("Le choix doit Ãªtre un entier (0 ou 1). Veuillez rÃ©essayer.");
                         break;
                 }
             } else {
-                System.out.println("Le choix doit être un entier (0 ou 1). Veuillez réessayer.");
-                scanner.next(); // Lire et ignorer l'entrée non valide
+                System.out.println("Le choix doit Ãªtre un entier (0 ou 1). Veuillez rÃ©essayer.");
+                scanner.next(); // Lire et ignorer l'entrÃ©e non valide
             }
 }
    
@@ -88,7 +121,7 @@ public void Play()
 while (!game.getGrid().gameOver()) {
 	
     game.print();
-  System.out.println("Quelle case voulez-vous modifier ? Taper 'Help' pour résoudre");
+  System.out.println("Quelle case voulez-vous modifier ? Taper 'Help' pour rÃ©soudre");
     String input = scanner.next();
     if (input.equalsIgnoreCase("Help")) {
         ArrayList<Grid> solution = game.getGrid().solved(game.getGrid());
@@ -123,13 +156,13 @@ while (!game.getGrid().gameOver()) {
                         if (scanner.hasNextInt()) {
                             j2 = scanner.nextInt();
                         } else {
-                            System.out.println("Destination invalide. Veuillez saisir des entiers pour les coordonnées.");
-                            scanner.next(); // Lire et ignorer l'entrée non valide
+                            System.out.println("Destination invalide. Veuillez saisir des entiers pour les coordonnÃ©es.");
+                            scanner.next(); // Lire et ignorer l'entrÃ©e non valide
                             continue;
                         }
                     } else {
-                        System.out.println("Destination invalide. Veuillez saisir des entiers pour les coordonnées.");
-                        scanner.next(); // Lire et ignorer l'entrée non valide
+                        System.out.println("Destination invalide. Veuillez saisir des entiers pour les coordonnÃ©es.");
+                        scanner.next(); // Lire et ignorer l'entrÃ©e non valide
                         continue;
                     }
                 }
@@ -144,16 +177,16 @@ while (!game.getGrid().gameOver()) {
             } else {
                 i2 = i1;
                 j2 = j1;
-                System.out.println("La case ne peut pas être déplacé ");
+                System.out.println("La case ne peut pas Ãªtre dÃ©placÃ© ");
             }
         } else {
-            System.out.println("Coordonnées invalides. Veuillez saisir des entiers pour les coordonnées.");
-            scanner.next(); // Lire et ignorer l'entrée non valide
+            System.out.println("CoordonnÃ©es invalides. Veuillez saisir des entiers pour les coordonnÃ©es.");
+            scanner.next(); // Lire et ignorer l'entrÃ©e non valide
             continue;
         }
     } else {
-        System.out.println("Coordonnées invalides. Veuillez saisir des entiers pour les coordonnées.");
-        scanner.next(); // Lire et ignorer l'entrée non valide
+        System.out.println("CoordonnÃ©es invalides. Veuillez saisir des entiers pour les coordonnÃ©es.");
+        scanner.next(); // Lire et ignorer l'entrÃ©e non valide
         continue;
     }
 }
