@@ -1,6 +1,7 @@
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -27,6 +28,7 @@ import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
+
 public class Main extends Application {
 	//static Scene players = null;
 	//static Scene creation = null;
@@ -38,7 +40,7 @@ public class Main extends Application {
 	static Button swap=null;
     static int row;
 	static int column;
-	
+	static Grid grille;
 	
 	@Override
 	public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
@@ -342,7 +344,7 @@ public class Main extends Application {
 		        		@Override
 			        	public void handle(ActionEvent event) {
 		        			
-			        		if(game.getType()==null) { // A modif présentation
+			        		if(game.getType()==null) { // A modif prï¿½sentation
 			        			
 			        			
 			        			Alert shuffleAlert=new Alert(AlertType.WARNING);
@@ -388,9 +390,9 @@ public class Main extends Application {
 				        			
 			        				}
 			        				catch (IndexOutOfBoundsException e) {
-			        				    // Bloc de code exécuté si l'exception est capturée
+			        				    // Bloc de code exï¿½cutï¿½ si l'exception est capturï¿½e
 			        				    System.out.println("Erreur : L'indice est hors limites.");
-			        				    e.printStackTrace(); // Afficher les détails de l'exception
+			        				    e.printStackTrace(); // Afficher les dï¿½tails de l'exception
 			        				}
 			            			
 			        			}
@@ -532,26 +534,39 @@ public class Main extends Application {
                 solveButton.setFont(new Font("Berlin Sans FB",30));
                 solveButton.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
-                        if (game.getIsSolvable()) {
+                    	if (game.getIsSolvable()) {
                         	ArrayList<Grid> solution = game.getGrid().solved(game.getGrid());
-                            if(solution!=null) {
-                                //Duration solveTransition=Duration.millis(000);
-                                //PauseTransition pause = new PauseTransition(solveTransition);
-                                
-                                    
-                                    updateGrid(gridpane, solution.get(i));
-                                    /*
-                                    
-                                    System.out.println("etape "+i);
-                                    pause.play();
-                                    solution.get(i).print();
-                                    */
+                        	Thread thread = new Thread(new Runnable() {
+                        		@Override
+                                public void run() {
+                                	Runnable updater = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateGrid(gridpane,grille);
+                                        }
+                                    };
+                                    for (Grid g : solution) {
+                                    	try {
+                                            Thread.sleep(500);
+                                        } catch (InterruptedException ex) {
+                                        }
+
+                                        // UI update is run on the Application thread
+                                    	grille = g;
+                                        Platform.runLater(updater);
+                                		
+                                        
+                                	}
                                 }
-                            
-                            
-                        }
+                        	});
+                        	thread.setDaemon(true);
+                            thread.start();
+                    	}
+                    }
+                });
+
                         
-                    }});            
+            
 			
 			Label bestScore = new Label();
 			bestScore.setFont(new Font("Berlin Sans FB",30));
