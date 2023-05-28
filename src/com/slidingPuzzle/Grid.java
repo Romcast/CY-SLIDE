@@ -15,12 +15,18 @@ private int nbLevel;
 private Cell[][] grid;
 private Grid goal;
 int i,j;
+private int heuristicCost;
+private int gscore;
+private int totalCost;
 
 public Grid() {
     nbRows = 0;
     nbColumns = 0;
     grid = null;
     goal = null;
+    heuristicCost =0;
+    totalCost=0;
+    gscore=0;
 }
 
 public Grid(File file) 
@@ -84,6 +90,23 @@ public Grid(File file)
 
 	public int getNbRows() {
 	return this.nbRows;
+}
+public int getGscore() {
+    return gscore;
+}
+public void setGscore(int gscore) {
+    this.gscore = gscore;
+}
+private Grid getGoal() { return this.goal ;}
+public void setHeuristicCost(int heuristicCost) {
+    this.heuristicCost = heuristicCost;
+}
+public int getHeuristicCost() { return this.heuristicCost;}
+public void setTotalCost(int cost) {
+    this.totalCost = cost;
+}
+public int getTotalCost() {
+    return totalCost;
 }
 
 public int getNbColumns() {
@@ -424,15 +447,18 @@ public ArrayList<int[]> nbPossibleMove(int i,int j){
 
 }
 
+@Override
 public Grid clone() {
     Grid cloneGrid = new Grid();
     cloneGrid.goal = new Grid();
-    cloneGrid.grid = new Cell[this.nbRows][this.nbColumns]; 
-    cloneGrid.goal.grid = new Cell[this.nbRows][this.nbColumns]; 
+    cloneGrid.grid = new Cell[this.nbRows][this.nbColumns];
+    cloneGrid.goal.grid = new Cell[this.nbRows][this.nbColumns];
     cloneGrid.nbRows = this.nbRows;
     cloneGrid.nbColumns = this.nbColumns;
     cloneGrid.nbLevel = this.nbLevel;
-
+    cloneGrid.heuristicCost = this.heuristicCost;
+    cloneGrid.totalCost = this.totalCost;
+    cloneGrid.gscore = this.gscore;
 
     for (int i = 0; i < this.nbRows; i++) {
         for (int j = 0; j < this.nbColumns; j++) {
@@ -444,6 +470,136 @@ public Grid clone() {
     return cloneGrid;
 }
 
+@Override
+public boolean equals(Object obj) {
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+        return false;
+    }
+    Grid other = (Grid) obj;
+    if (this.grid.length != other.grid.length || this.grid[0].length != other.grid[0].length) {
+        return false;
+    }
+    for (int i = 0; i < this.grid.length; i++) {
+        for (int j = 0; j < this.grid[i].length; j++) {
+            Cell thisCell = this.grid[i][j];
+            Cell otherCell = other.grid[i][j];
+            if ((thisCell == null && otherCell != null) || (thisCell != null && !thisCell.equals(otherCell))) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+@Override
+public int hashCode() {
+    final int prime = 67;
+    int result = 1;
+
+    for (int i = 0; i < this.grid.length; i++) {
+        for (int j = 0; j < this.grid[i].length; j++) {
+            Cell cell = this.grid[i][j];
+            result = prime * result + ((cell.getValue() == null) ? 0 : cell.getValue().hashCode());
+            result = prime * result + ((cell.getType() == null) ? 0 : cell.getType().hashCode());
+        }
+    }
+
+    return result;
+}
+
+public List<Grid> solved(Grid initialGrid) {
+    PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getTotalCost));
+    Set<Grid> closedSet = new HashSet<>();
+    Map<Grid, Grid> cameFrom = new HashMap<>();
+
+    initialGrid.setHeuristicCost(calculateHeuristicCost(initialGrid));
+    initialGrid.setTotalCost(initialGrid.getHeuristicCost());
+    initialGrid.setGscore(0);
+
+    openSet.add(initialGrid);
+
+    while (!openSet.isEmpty()) {
+        Grid currentGrid = openSet.poll();
+
+        if (currentGrid.gameOver()) {
+            return reconstructPath(cameFrom, currentGrid);
+        }
+
+        closedSet.add(currentGrid);
+
+        List<Cell> emptyCells = currentGrid.listOfEmptyCells();
+        for (Cell emptyCell : emptyCells) {
+            int emptyCellRow = emptyCell.getRow();
+            int emptyCellColumn = emptyCell.getColumn();
+
+            for (int[] move : move) {
+                int nextI = emptyCellRow + move[0];
+                int nextJ = emptyCellColumn + move[1];
+                if (currentGrid.isValidated(nextI, nextJ)) {
+                    Grid neighbor = currentGrid.clone();
+                    boolean moved = neighbor.moveCell(neighbor.getGrid()[emptyCellRow][emptyCellColumn], neighbor.getGrid()[nextI][nextJ]);
+
+                    if (moved) {
+                        int tentativeGScore = currentGrid.getGscore() + 1;
+
+                        if (closedSet.contains(neighbor) && tentativeGScore >= neighbor.getGscore()) {
+                            continue;
+                        }
+
+                        if (!openSet.contains(neighbor) || tentativeGScore < neighbor.getGscore()) {
+                            cameFrom.put(neighbor, currentGrid);
+                            neighbor.setGscore(tentativeGScore);
+                            int heuristicCost = calculateHeuristicCost(neighbor);
+                            int totalCost = tentativeGScore + heuristicCost;
+                            neighbor.setHeuristicCost(heuristicCost);
+                            neighbor.setTotalCost(totalCost);
+
+                            if (!openSet.contains(neighbor) && !closedSet.contains(neighbor)) {
+                                openSet.add(neighbor);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return null; // No solution found
+}
+
+private static int calculateHeuristicCost(Grid grid) {
+    int cost = 0;
+
+    for (int i = 0; i < grid.getNbRows(); i++) {
+        for (int j = 0; j < grid.getNbColumns(); j++) {
+            Cell cell = grid.getGrid()[i][j];
+
+            if (cell.getType() == CellType.GameCell && grid.getGoal() != null && grid.getGoal().getGrid() != null) {
+                int goalRow = grid.getGoal().getGrid()[i][j].getRow();
+                int goalColumn = grid.getGoal().getGrid()[i][j].getColumn();
+                cost += Math.abs(i - goalRow) + Math.abs(j - goalColumn);
+            }
+        }
+    }
+
+    return cost;
+}
+
+private static List<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid currentGrid) {
+    List<Grid> path = new ArrayList<>();
+    path.add(currentGrid);
+
+    while (cameFrom.containsKey(currentGrid)) {
+        currentGrid = cameFrom.get(currentGrid);
+        path.add(0, currentGrid);
+    }
+
+    return path;
+}
+}
 }
 
 
