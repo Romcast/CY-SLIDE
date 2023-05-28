@@ -479,7 +479,7 @@ public void seth(int h) {
 
 @Override
 public boolean equals(Object obj) {
-	/* whange the function equals to correspond it with our class*/
+	/* change the function equals to correspond it with our class*/
     if (this == obj) {
         return true;
     }
@@ -563,7 +563,6 @@ public ArrayList<Grid> solved(Grid initialGrid) {
                     int newG = gScore.get(currentGrid) + 1;
 
                     if (closedSet.contains(children) && newG >= gScore.getOrDefault(children, Integer.MAX_VALUE)) {
-                    	//System.out.println("!!!!!!!!!!!!!!!!!!!!");
                         continue;
                     }
 
