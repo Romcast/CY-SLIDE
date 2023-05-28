@@ -512,6 +512,7 @@ public int hashCode()
 
 
 public ArrayList<Grid> solved(Grid initialGrid) {
+    if (!initialGrid.isSolvable()) {return null;}
     PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf));
     Set<Grid> closedSet = new HashSet<>();
     Map<Grid, Grid> cameFrom = new HashMap<>();
