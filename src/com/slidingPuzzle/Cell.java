@@ -71,11 +71,11 @@ public Cell copyCell(){
     cp.setFinalPosition(this.finalPosition);
     return cp;
 }
-
+/*
 public int hashCode() {
     int result = Objects.hash(value, type); // Utilisez les champs pertinents dans le calcul du hashCode
     return result;
-}
+}*/
 
 }
 

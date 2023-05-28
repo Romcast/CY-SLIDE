@@ -515,20 +515,25 @@ public int hashCode()
 
 
 public ArrayList<Grid> solved(Grid initialGrid) {
-    if (!initialGrid.isSolvable()) {return null;}
+    
     PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf));
     Set<Grid> closedSet = new HashSet<>();
     Map<Grid, Grid> cameFrom = new HashMap<>();
     Map<Grid, Integer> gScore = new HashMap<>();
     gScore.put(initialGrid, 0);
-
+    long startTime = System.currentTimeMillis();
+    long timeLimit = 1 * 15 * 1000; // 3 minutes en millisecondes
+    
     initialGrid.seth(calculateHeuristicCost(initialGrid));
     initialGrid.setf(initialGrid.geth()); // Calculer le coÃ»t total initial f
 
     openSet.add(initialGrid);
     
     while (!openSet.isEmpty()) {
-        
+    	// Vérifier si le temps limite est dépassé
+        if (System.currentTimeMillis() - startTime > timeLimit) {
+            return null; // Temps limite dépassé, pas de solution trouvée
+        }
         Grid currentGrid = openSet.poll();
         
         
@@ -555,7 +560,7 @@ public ArrayList<Grid> solved(Grid initialGrid) {
                     int newG = gScore.get(currentGrid) + 1;
 
                     if (closedSet.contains(children) && newG >= gScore.getOrDefault(children, Integer.MAX_VALUE)) {
-                    	System.out.println("!!!!!!!!!!!!!!!!!!!!");
+                    	//System.out.println("!!!!!!!!!!!!!!!!!!!!");
                         continue;
                     }
 
