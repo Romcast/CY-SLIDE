@@ -1,6 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 
 public class Grid implements Serializable{
@@ -14,19 +13,16 @@ private int nbColumns;
 private int nbLevel;
 private Cell[][] grid;
 private Grid goal;
+private int h;
+private int f;
 int i,j;
-private int heuristicCost;
-private int gscore;
-private int totalCost;
+
 
 public Grid() {
     nbRows = 0;
     nbColumns = 0;
     grid = null;
     goal = null;
-    heuristicCost =0;
-    totalCost=0;
-    gscore=0;
 }
 
 public Grid(File file) 
@@ -90,23 +86,6 @@ public Grid(File file)
 
 	public int getNbRows() {
 	return this.nbRows;
-}
-public int getGscore() {
-    return gscore;
-}
-public void setGscore(int gscore) {
-    this.gscore = gscore;
-}
-private Grid getGoal() { return this.goal ;}
-public void setHeuristicCost(int heuristicCost) {
-    this.heuristicCost = heuristicCost;
-}
-public int getHeuristicCost() { return this.heuristicCost;}
-public void setTotalCost(int cost) {
-    this.totalCost = cost;
-}
-public int getTotalCost() {
-    return totalCost;
 }
 
 public int getNbColumns() {
@@ -202,12 +181,26 @@ parametres :
 {
     Integer tmpValue = C1.getValue();
     CellType tmpType = C1.getType();
+    int[] tmp = new int[2];
     
     C1.setType(C2.getType());
     C1.setValue(C2.getValue());
     
     C2.setType(tmpType);
     C2.setValue(tmpValue);
+    
+    tmp[0]=C1.getFinalPosition()[0];
+    tmp[1]=C1.getFinalPosition()[1];
+    
+    C1.setFinalPosition(C2.getFinalPosition());
+    C2.setFinalPosition(tmp);
+    
+    
+    
+    
+   
+    
+    
     
 }
 
@@ -360,8 +353,8 @@ public boolean wellShuffled() {
 public ArrayList<Cell> listOfEmptyCells() {
     ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
 
-    for (i = 0; i < nbRows; i++) {
-        for (j = 0; j < nbColumns; j++) {
+    for (int i = 0; i < nbRows; i++) {
+        for (int j = 0; j < nbColumns; j++) {
             if (grid[i][j].getType() == CellType.EmptyCell) {
                 listOfEmptyCells.add(grid[i][j]);
             }
@@ -447,18 +440,14 @@ public ArrayList<int[]> nbPossibleMove(int i,int j){
 
 }
 
-@Override
 public Grid clone() {
     Grid cloneGrid = new Grid();
     cloneGrid.goal = new Grid();
-    cloneGrid.grid = new Cell[this.nbRows][this.nbColumns];
-    cloneGrid.goal.grid = new Cell[this.nbRows][this.nbColumns];
+    cloneGrid.grid = new Cell[this.nbRows][this.nbColumns]; 
+    cloneGrid.goal.grid = new Cell[this.nbRows][this.nbColumns]; 
     cloneGrid.nbRows = this.nbRows;
     cloneGrid.nbColumns = this.nbColumns;
     cloneGrid.nbLevel = this.nbLevel;
-    cloneGrid.heuristicCost = this.heuristicCost;
-    cloneGrid.totalCost = this.totalCost;
-    cloneGrid.gscore = this.gscore;
 
     for (int i = 0; i < this.nbRows; i++) {
         for (int j = 0; j < this.nbColumns; j++) {
@@ -466,8 +455,26 @@ public Grid clone() {
             cloneGrid.goal.grid[i][j] = this.goal.grid[i][j].copyCell();
         }
     }
+    cloneGrid.f = this.f;
+    cloneGrid.h = this.h;
 
     return cloneGrid;
+}
+
+public int getf() {
+    return f;
+}
+
+public int geth() {
+    return h;
+}
+
+public void setf(int f) {
+    this.f = f;
+}
+
+public void seth(int h) {
+    this.h = h;
 }
 
 @Override
@@ -479,14 +486,12 @@ public boolean equals(Object obj) {
         return false;
     }
     Grid other = (Grid) obj;
-    if (this.grid.length != other.grid.length || this.grid[0].length != other.grid[0].length) {
+    if (nbRows != other.nbRows || nbColumns != other.nbColumns || nbLevel != other.nbLevel) {
         return false;
     }
-    for (int i = 0; i < this.grid.length; i++) {
-        for (int j = 0; j < this.grid[i].length; j++) {
-            Cell thisCell = this.grid[i][j];
-            Cell otherCell = other.grid[i][j];
-            if ((thisCell == null && otherCell != null) || (thisCell != null && !thisCell.equals(otherCell))) {
+    for (int i = 0; i < nbRows; i++) {
+        for (int j = 0; j < nbColumns; j++) {
+            if (!grid[i][j].equals(other.grid[i][j])) {
                 return false;
             }
         }
@@ -495,71 +500,79 @@ public boolean equals(Object obj) {
 }
 
 @Override
-public int hashCode() {
-    final int prime = 67;
+
+public int hashCode() 
+{
     int result = 1;
-
-    for (int i = 0; i < this.grid.length; i++) {
-        for (int j = 0; j < this.grid[i].length; j++) {
-            Cell cell = this.grid[i][j];
-            result = prime * result + ((cell.getValue() == null) ? 0 : cell.getValue().hashCode());
-            result = prime * result + ((cell.getType() == null) ? 0 : cell.getType().hashCode());
-        }
-    }
-
+    result = 31 * result + Arrays.deepHashCode(this.grid);
     return result;
 }
 
-public List<Grid> solved(Grid initialGrid) {
-    PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getTotalCost));
+
+
+public ArrayList<Grid> solved(Grid initialGrid) {
+    PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf));
     Set<Grid> closedSet = new HashSet<>();
     Map<Grid, Grid> cameFrom = new HashMap<>();
+    Map<Grid, Integer> gScore = new HashMap<>();
+    gScore.put(initialGrid, 0);
 
-    initialGrid.setHeuristicCost(calculateHeuristicCost(initialGrid));
-    initialGrid.setTotalCost(initialGrid.getHeuristicCost());
-    initialGrid.setGscore(0);
+    initialGrid.seth(calculateHeuristicCost(initialGrid));
+    initialGrid.setf(initialGrid.geth()); // Calculer le coût total initial f
 
     openSet.add(initialGrid);
-
+    
     while (!openSet.isEmpty()) {
+        
         Grid currentGrid = openSet.poll();
-
+        
+        
         if (currentGrid.gameOver()) {
             return reconstructPath(cameFrom, currentGrid);
         }
+        
+        
+        ArrayList<Cell> emptyCells = currentGrid.listOfEmptyCells();
 
-        closedSet.add(currentGrid);
-
-        List<Cell> emptyCells = currentGrid.listOfEmptyCells();
         for (Cell emptyCell : emptyCells) {
-            int emptyCellRow = emptyCell.getRow();
-            int emptyCellColumn = emptyCell.getColumn();
+            for (int[] moves : move) {
+                int nextI = emptyCell.getRow() + moves[0];
+                int nextJ = emptyCell.getColumn() + moves[1];
 
-            for (int[] move : move) {
-                int nextI = emptyCellRow + move[0];
-                int nextJ = emptyCellColumn + move[1];
-                if (currentGrid.isValidated(nextI, nextJ)) {
-                    Grid neighbor = currentGrid.clone();
-                    boolean moved = neighbor.moveCell(neighbor.getGrid()[emptyCellRow][emptyCellColumn], neighbor.getGrid()[nextI][nextJ]);
+                if (!currentGrid.isValidated(nextI, nextJ)) {
+                    continue;
+                }
 
-                    if (moved) {
-                        int tentativeGScore = currentGrid.getGscore() + 1;
+                Grid children = currentGrid.clone();
+                boolean moved = children.moveCell(children.getGrid()[emptyCell.getRow()][emptyCell.getColumn()], children.getGrid()[nextI][nextJ]);
 
-                        if (closedSet.contains(neighbor) && tentativeGScore >= neighbor.getGscore()) {
-                            continue;
-                        }
+                if (moved) {
+                    int newG = gScore.get(currentGrid) + 1;
 
-                        if (!openSet.contains(neighbor) || tentativeGScore < neighbor.getGscore()) {
-                            cameFrom.put(neighbor, currentGrid);
-                            neighbor.setGscore(tentativeGScore);
-                            int heuristicCost = calculateHeuristicCost(neighbor);
-                            int totalCost = tentativeGScore + heuristicCost;
-                            neighbor.setHeuristicCost(heuristicCost);
-                            neighbor.setTotalCost(totalCost);
+                    if (closedSet.contains(children) && newG >= gScore.getOrDefault(children, Integer.MAX_VALUE)) {
+                    	System.out.println("!!!!!!!!!!!!!!!!!!!!");
+                        continue;
+                    }
 
-                            if (!openSet.contains(neighbor) && !closedSet.contains(neighbor)) {
-                                openSet.add(neighbor);
-                            }
+                    if (!openSet.contains(children) || newG < gScore.getOrDefault(children, Integer.MAX_VALUE)) {
+                        cameFrom.put(children, currentGrid);
+                        //System.out.println("Last G = "+gScore.getOrDefault(children, Integer.MAX_VALUE)+" New G = "+newG);
+                        	
+                        
+                        
+                        
+                        gScore.put(children, newG);
+                        
+                        //System.out.println("Last G = "+gScore.getOrDefault(children, Integer.MAX_VALUE)+" New G = "+newG);
+                        children.seth(calculateHeuristicCost(children));
+                        int f = newG + children.geth();
+                        children.setf(f);
+                        
+                        
+                        
+
+                        if (!openSet.contains(children) && !closedSet.contains(children)) {
+                            openSet.add(children);
                         }
                     }
                 }
@@ -572,24 +585,26 @@ public List<Grid> solved(Grid initialGrid) {
 
 private static int calculateHeuristicCost(Grid grid) {
     int cost = 0;
-
+    grid.print();
     for (int i = 0; i < grid.getNbRows(); i++) {
         for (int j = 0; j < grid.getNbColumns(); j++) {
-            Cell cell = grid.getGrid()[i][j];
+            Cell cell = grid.grid[i][j].copyCell();
 
-            if (cell.getType() == CellType.GameCell && grid.getGoal() != null && grid.getGoal().getGrid() != null) {
-                int goalRow = grid.getGoal().getGrid()[i][j].getRow();
-                int goalColumn = grid.getGoal().getGrid()[i][j].getColumn();
+            if (cell.getType() != CellType.UnexistantCell && grid.getGoal() != null && grid.getGoal().getGrid() != null) {
+                int goalRow = cell.getFinalPosition()[0];
+                int goalColumn = cell.getFinalPosition()[1];
+                System.out.println("Value : "+cell.getValue()+" Goal Row = " + goalRow + " et Goal Column = "+goalColumn);
                 cost += Math.abs(i - goalRow) + Math.abs(j - goalColumn);
             }
+            
         }
     }
-
+    //System.out.println("h = "+cost);
     return cost;
 }
 
-private static List<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid currentGrid) {
-    List<Grid> path = new ArrayList<>();
+private static ArrayList<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid currentGrid) {
+    ArrayList<Grid> path = new ArrayList<>();
     path.add(currentGrid);
 
     while (cameFrom.containsKey(currentGrid)) {
@@ -599,7 +614,8 @@ private static List<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid current
 
     return path;
 }
+
 }
-}
+
 
 
