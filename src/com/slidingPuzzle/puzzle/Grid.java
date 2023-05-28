@@ -579,17 +579,16 @@ public int hashCode()
  */
 
 public ArrayList<Grid> solved(Grid initialGrid) {
-   
-        if (System.currentTimeMillis() - startTime > timeLimit) {
-            return null; 
-        }
+    long startTime = System.currentTimeMillis();
+    long timeLimit = 1 * 10 * 1000;
+        
     PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf));
     Set<Grid> closedSet = new HashSet<>();
     Map<Grid, Grid> cameFrom = new HashMap<>();
     Map<Grid, Integer> gScore = new HashMap<>();
     gScore.put(initialGrid, 0);
-    long startTime = System.currentTimeMillis();
-    long timeLimit = 1 * 15 * 1000;
+    
+	
 
     initialGrid.seth(calculateHeuristicCost(initialGrid));
     initialGrid.setf(initialGrid.geth()); // Calculer le coÃ»t total initial f
@@ -597,6 +596,9 @@ public ArrayList<Grid> solved(Grid initialGrid) {
     openSet.add(initialGrid);
     
     while (!openSet.isEmpty()) {
+	   if (System.currentTimeMillis() - startTime > timeLimit) {
+            return null; 
+        }
         
         Grid currentGrid = openSet.poll();
         
