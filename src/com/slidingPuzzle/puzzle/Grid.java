@@ -1,7 +1,13 @@
+package puzzle;
 import java.io.*;
 import java.util.*;
 
 
+/**
+ *this class is the grid containing cells with which the players will play
+ * @author CYTech Student
+ *
+ */
 public class Grid implements Serializable{
 	
 private static final long serialVersionUID = 3;
@@ -17,14 +23,19 @@ private int h;
 private int f;
 int i,j;
 
-
+/**
+ * This constructor permit to initialize the grid with everything at 0 and null
+ */
 public Grid() {
     nbRows = 0;
     nbColumns = 0;
     grid = null;
     goal = null;
 }
-
+/**
+ * This grid read the file in parameter and set the grid 
+ * @param file
+ */
 public Grid(File file) 
 {
     try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -83,16 +94,30 @@ public Grid(File file)
             e.printStackTrace();
             }
 }
+/**
+ * This getter permit to get the number of row of the grid
+ * @return
+ */
 
 	public int getNbRows() {
 	return this.nbRows;
 }
 
+/**
+ * This getter permit to get the number of column of the grid
+ * @return
+ */
 public int getNbColumns() {
 	return this.nbColumns;
 }
-//faire setter (pas de getter)
+/**
+ * This getter permit to get the grid of cell
+ * @return
+ */
 public Cell[][] getGrid(){return this.grid;}
+/**
+ * this method permit to print the grid in the console
+ */
 
 public void print() // Displays a grid
 {
@@ -141,23 +166,24 @@ public void print() // Displays a grid
     System.out.println();    
         
 }
-
+/**
+ * This getter permit to get the goal of the game played by the player that we set in files
+ * @return
+ */
 public Grid getGoal() {
 	return this.goal;
 }
-	
+/**
+ * This method makes it possible to determine if the coordinates i and j are in the grid's play, that is to say that they are not outside the table or that they don't point to UnExistantCell
+   
+            true  : Coordinates to check are valid (in grid's game)
+            false : coordinates to check are not valid (out grid's game)
+ * @param i The coordinates to check
+ * @param j The coordinates to check
+ * @return  true  : Coordinates to check are valid (in grid's game) false : coordinates to check are not valid (out grid's game)
+ */
 public boolean isValidated(int i, int j) 
-/*
 
-This method makes it possible to determine if the coordinates i and j are in the grid's play, that is to say that they are not outside the table or that they don't point to UnExistantCell
-  
-parametres : 
-            i and j : The coordinates to check
-return :    
-            true  : Coordinates to check are valide (in grid's game)
-            false : coordinates to check are not valide (out grid's game)
-
-*/
 {
         if((i >= 0) && i < this.nbRows && j >= 0 && j < this.nbColumns) 
         {
@@ -168,16 +194,13 @@ return :
 }
 
 
-
+/**
+ * This method swaps two cells
+ * @param C1
+ * @param C2
+ */
 public void exchangeCells(Cell C1, Cell C2) 
-/*
 
-This method swaps two cells
-  
-parametres : 
-            
-
-*/
 {
     Integer tmpValue = C1.getValue();
     CellType tmpType = C1.getType();
@@ -203,7 +226,12 @@ parametres :
     
     
 }
-
+/**
+ * This method verify if two cells are neighbor
+ * @param C1
+ * @param C2
+ * @return
+ */
 public boolean areNeighbor(Cell C1,Cell C2){
 
     if (!this.isValidated(C2.getRow(),C2.getColumn())){return false;}
@@ -214,19 +242,14 @@ public boolean areNeighbor(Cell C1,Cell C2){
     }
     return false;
 }
-
+/**
+ * This method moves a cell of the grid towards a direction while checking if that is possible
+ * @param C1
+ * @param C2
+ * @return true  : The cell has been moved false : The cell has not been moved (because it can't)
+ */
 public boolean moveCell(Cell C1, Cell C2) 
-/*
 
-This method moves a cell of the grid towards a direction while checking if that is possible
-  
-parametres : 
-
-return :    
-            true  : The cell has been moved
-            false : The cell has not been moved (because it can't)
-
-*/
 { 
 
    
@@ -242,7 +265,9 @@ return :
 
 }
 
-
+/**
+ * This method implement the step by step shuffle
+ */
 public void stepByStepShuffle() 
 	{
 	
@@ -283,6 +308,9 @@ public void stepByStepShuffle()
 	
 		
 	}
+/**
+ * This method implements the random shuffle
+ */
 
  public void randomShuffled() 
  {
@@ -330,7 +358,10 @@ public void stepByStepShuffle()
 
 
 }
-
+/**
+ * The method wellshuffled permit to verify once the shuffled has been done if the cell are not at their initial place
+ * @return
+ */
 
 public boolean wellShuffled() {
 	
@@ -349,7 +380,10 @@ public boolean wellShuffled() {
         
 		return true;
 	}
-
+/**
+ * This method return the list of cells that are empty cells which mean cells in which the player can swipe other cells
+ * @return
+ */
 public ArrayList<Cell> listOfEmptyCells() {
     ArrayList<Cell> listOfEmptyCells = new ArrayList<Cell>();
 
@@ -364,7 +398,10 @@ public ArrayList<Cell> listOfEmptyCells() {
     return listOfEmptyCells;
 }
 
-
+/**
+ * this method permit to verify if the grid is solvable
+ * @return
+ */
 public boolean isSolvable() {
     int reversalCount = 0;
     int emptyRow;
@@ -402,7 +439,10 @@ public boolean isSolvable() {
 }
 
 
-
+/**
+ * This method permit to tell if the game has been solved or not
+ * @return
+ */
 public boolean gameOver()
 {
 
@@ -416,7 +456,12 @@ public boolean gameOver()
     }
     return true;
 }
-
+/**
+ *This method return the number of move possible by the cell with the coordinate (i,j)
+ * @param i line
+ * @param j column
+ * @return
+ */
 public ArrayList<int[]> nbPossibleMove(int i,int j){
     ArrayList<int[]> possibleMove = new ArrayList<>();
     int m,nextI,nextJ;
@@ -439,7 +484,9 @@ public ArrayList<int[]> nbPossibleMove(int i,int j){
     return possibleMove;
 
 }
-
+/**
+ * This method permit to clone a grid
+ */
 public Grid clone() {
     Grid cloneGrid = new Grid();
     cloneGrid.goal = new Grid();
@@ -460,40 +507,52 @@ public Grid clone() {
 
     return cloneGrid;
 }
-
+/**
+ * Getter that permit to get the total cost
+ * @return
+ */
 public int getf() {
     return f;
 }
-
+/**
+ * Getter that permit to get the heuristic cost
+ * @return
+ */
 public int geth() {
     return h;
 }
-
+/**
+ * Setter that permit to set the total cost
+ * @param f
+ */
 public void setf(int f) {
     this.f = f;
 }
-
+/**
+ * setter that permit to set the heuristic cost
+ * @param h
+ */
 public void seth(int h) {
     this.h = h;
 }
-
+/**
+ * This method permit to verify if two object are equals
+ */
 @Override
 public boolean equals(Object obj) {
     if (this == obj) {
         return true;
     }
-    if (obj == null || getClass() != obj.getClass()) {
+    if (obj == null  || getClass() != obj.getClass()) {
         return false;
     }
     Grid other = (Grid) obj;
-    if (nbRows != other.nbRows || nbColumns != other.nbColumns || nbLevel != other.nbLevel) {
-        return false;
-    }
+
     for (int i = 0; i < nbRows; i++) {
         for (int j = 0; j < nbColumns; j++) {
             Cell thisCell = grid[i][j];
             Cell otherCell = other.grid[i][j];
-            if (!Objects.equals(thisCell.getValue(), otherCell.getValue())) {
+            if (!other.grid[i][j].equals(this.grid[i][j]) ){
                 return false;
             }
         }
@@ -502,9 +561,10 @@ public boolean equals(Object obj) {
 }
 
 
-
 @Override
-
+/**
+ * This method set the hashcode
+ */
 public int hashCode() 
 {
     int result = 1;
@@ -512,28 +572,27 @@ public int hashCode()
     return result;
 }
 
-
+/**
+ * This function solve the grid
+ * @param initialGrid
+ * @return
+ */
 
 public ArrayList<Grid> solved(Grid initialGrid) {
-    
+    if (!initialGrid.isSolvable()) {return null;}
     PriorityQueue<Grid> openSet = new PriorityQueue<>(Comparator.comparingInt(Grid::getf));
     Set<Grid> closedSet = new HashSet<>();
     Map<Grid, Grid> cameFrom = new HashMap<>();
     Map<Grid, Integer> gScore = new HashMap<>();
     gScore.put(initialGrid, 0);
-    long startTime = System.currentTimeMillis();
-    long timeLimit = 1 * 15 * 1000; // 3 minutes en millisecondes
-    
+
     initialGrid.seth(calculateHeuristicCost(initialGrid));
-    initialGrid.setf(initialGrid.geth()); // Calculer le coût total initial f
+    initialGrid.setf(initialGrid.geth()); // Calculer le coÃ»t total initial f
 
     openSet.add(initialGrid);
     
     while (!openSet.isEmpty()) {
-    	// V�rifier si le temps limite est d�pass�
-        if (System.currentTimeMillis() - startTime > timeLimit) {
-            return null; // Temps limite d�pass�, pas de solution trouv�e
-        }
+        
         Grid currentGrid = openSet.poll();
         
         
@@ -560,7 +619,7 @@ public ArrayList<Grid> solved(Grid initialGrid) {
                     int newG = gScore.get(currentGrid) + 1;
 
                     if (closedSet.contains(children) && newG >= gScore.getOrDefault(children, Integer.MAX_VALUE)) {
-                    	//System.out.println("!!!!!!!!!!!!!!!!!!!!");
+                    	System.out.println("!!!!!!!!!!!!!!!!!!!!");
                         continue;
                     }
 
@@ -592,7 +651,11 @@ public ArrayList<Grid> solved(Grid initialGrid) {
 
     return null; // No solution found
 }
-
+/**
+ * this method calculate the heuristic cost
+ * @param grid
+ * @return
+ */
 private static int calculateHeuristicCost(Grid grid) {
     int cost = 0;
     grid.print();
@@ -612,7 +675,12 @@ private static int calculateHeuristicCost(Grid grid) {
     System.out.println("h = "+cost);
     return cost;
 }
-
+/**
+ * This method retrieve the path that solves the grid
+ * @param cameFrom
+ * @param currentGrid
+ * @return
+ */
 private static ArrayList<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid currentGrid) {
     ArrayList<Grid> path = new ArrayList<>();
     path.add(currentGrid);
@@ -626,6 +694,4 @@ private static ArrayList<Grid> reconstructPath(Map<Grid, Grid> cameFrom, Grid cu
 }
 
 }
-
-
 
