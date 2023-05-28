@@ -116,7 +116,7 @@ public class Game implements Serializable {
         	}
     	}
    
-    	
+    	ov
     }
     /**
      * this getter permit to get the type of the shuffle chosen by the player
@@ -190,7 +190,7 @@ public class Game implements Serializable {
      */
     public boolean gameOver() {
     	if (this.grid.gameOver()) {
-    		if (this.level == this.player.getLevelMax()){
+    		if (this.level == this.player.getLevelMax() && this.level<10 ){
     			this.player.incLevelMax();
     		}
     		return true;
