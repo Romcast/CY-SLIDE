@@ -116,7 +116,7 @@ public class Game implements Serializable {
         	}
     	}
    
-    	ov
+    	
     }
     /**
      * this getter permit to get the type of the shuffle chosen by the player
