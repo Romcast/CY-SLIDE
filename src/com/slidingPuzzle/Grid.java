@@ -482,22 +482,25 @@ public boolean equals(Object obj) {
     if (this == obj) {
         return true;
     }
-    if (obj == null  || getClass() != obj.getClass()) {
+    if (obj == null || getClass() != obj.getClass()) {
         return false;
     }
     Grid other = (Grid) obj;
-
+    if (nbRows != other.nbRows || nbColumns != other.nbColumns || nbLevel != other.nbLevel) {
+        return false;
+    }
     for (int i = 0; i < nbRows; i++) {
         for (int j = 0; j < nbColumns; j++) {
             Cell thisCell = grid[i][j];
             Cell otherCell = other.grid[i][j];
-            if (!other.grid[i][j].equals(this.grid[i][j]) ){
+            if (!Objects.equals(thisCell.getValue(), otherCell.getValue())) {
                 return false;
             }
         }
     }
     return true;
 }
+
 
 
 @Override
